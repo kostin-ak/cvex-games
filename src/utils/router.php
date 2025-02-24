@@ -16,6 +16,14 @@ class Router {
             case "":
                 RouterRules::main_page();
                 break;
+
+            case "login":
+                RouterRules::login();
+                break;
+            case "signup":
+                RouterRules::signup();
+                break;
+
             default:
                 RouterRules::error404();
                 break;
@@ -34,6 +42,16 @@ class RouterRules{
     static function error404(){
         self::add_global_files();
         require_once "pages/errors/404.php";
+    }
+
+    static function login(){
+        self::add_global_files();
+        require_once "pages/account/login.php";
+    }
+
+    static function signup(){
+        self::add_global_files();
+        require_once "pages/account/signup.php";
     }
 
 
