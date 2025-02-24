@@ -1,4 +1,10 @@
 <?php
+
+    include_once "router.php";
+
 	$uri = $_SERVER['REQUEST_URI'];
-    var_dump($uri);
+    $router = new Router($uri);
+    $router->route();
+
+
 ?>
