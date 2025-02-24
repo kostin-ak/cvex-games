@@ -1,0 +1,22 @@
+AddCharset UTF-8 .html
+<FilesMatch "\.(html)$">
+   Header set Cache-Control: "no-cache, no-store"
+   Header unset ETag
+</FilesMatch>
+Header set X-Content-Type-Options nosniff
+# DISABLE CACHING
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</IfModule>
+
+# Включаем перенаправление
+RewriteEngine On
+# Не применять к существующим файлам файлам
+RewriteCond %{REQUEST_FILENAME} !-f
+# Не применять к существующим директориям
+# Редирект всех запросов на index.php
+# L означает Last, нужен чтобы на этом этапе mod_rewrite сразу остановил работу.
+# Короче, небольшое увеличение производительности.
+RewriteRule .* index.php [L]
