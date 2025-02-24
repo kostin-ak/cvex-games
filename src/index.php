@@ -1,6 +1,6 @@
 <?php
 
-    include_once "router.php";
+    include_once "utils/router.php";
 
 	$uri = $_SERVER['REQUEST_URI'];
     $router = new Router($uri);
