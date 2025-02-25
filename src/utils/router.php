@@ -1,65 +1,56 @@
 <?php
 
+
+
 class Router {
 
     protected array $url;
+    protected string $surl;
+    protected array $pages;
 
-    function __construct(string $url){
+    function __construct(string $url, array $pages){
         if ($url != "" or $url != "/") $this->url = explode("/", $url);
         else $this->url = array();
+        if ($url[strlen($url)-1] == "/") $url = substr($url, 0, -1);
+        $this->surl = $url;
+        $this->pages = $pages;
     }
+
+
 
     public function route(){
-        switch($this->url[1]){
-            case "index.php":
-            case "home":
-            case "":
-                RouterRules::main_page();
-                break;
 
-            case "login":
-                RouterRules::login();
-                break;
-            case "signup":
-                RouterRules::signup();
-                break;
+        $starts = false;
 
-            default:
-                RouterRules::error404();
-                break;
+        foreach ($this->pages as $page){
+            foreach ($page->urls as $url) {
+                if (($url == "" and "" == $this->surl) or ($url != "" and preg_match($url, $this->surl))){
+                    $page->start();
+                    $starts = true;
+                    break 2;
+                }
+            }
         }
+
+        if (!$starts) {
+            $page = Page::voidPage("pages/errors/404.php");
+            $page->standard_page();
+            $page->start();
+        }
+
     }
 
 
-}
-
-class RouterRules{
-    static function main_page(){
-        self::add_global_files();
-        require_once "pages/main/index.php";
-    }
-
-    static function error404(){
-        self::add_global_files();
-        require_once "pages/errors/404.php";
-    }
-
-    static function login(){
-        self::add_global_files();
-        require_once "pages/account/login.php";
-    }
-
-    static function signup(){
-        self::add_global_files();
-        require_once "pages/account/signup.php";
+    protected function str_starts_with($haystack, $needle, $case = true): bool
+    {
+        if ($case) {
+            return strpos($haystack, $needle, 0) === 0;
+        }
+        return stripos($haystack, $needle, 0) === 0;
     }
 
 
-    static function add_global_files(){
-        echo "<style>";
-        include_once "global/css/global.css";
-        echo "</style>";
-    }
+
 }
 
 ?>
