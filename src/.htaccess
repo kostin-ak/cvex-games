@@ -20,3 +20,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 # L означает Last, нужен чтобы на этом этапе mod_rewrite сразу остановил работу.
 # Короче, небольшое увеличение производительности.
 RewriteRule .* index.php [L]
+
+<FilesMatch ".(htaccess|htpasswd|ini|phps|fla|psd|log|sh)$">
+order allow,deny
+deny from all
+</FilesMatch>
+
+ErrorDocument 403 /pages/errors/403.php

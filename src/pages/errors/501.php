@@ -1,3 +1,10 @@
+<?php
+
+header("HTTP/1.1 501 Not Implemented");
+
+?>
+
+
 <!doctype html>
 <html lang="ru">
 <head>

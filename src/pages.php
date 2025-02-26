@@ -6,7 +6,9 @@
         Page::standardPage("pages/main/index.php", ["/", "/home", "/main"]),
         Page::standardPage("pages/account/login.php", ["/login"]),
         Page::standardPage("pages/account/signup.php", ["/signup"]),
-        Page::standardPage("pages/errors/404.php", [])
+        Page::standardPage("pages/errors/404.php", []),
+        Page::standardPage("pages/errors/403.php", ["/errors/403"]),
+        Page::standardPage("pages/admin/index.php", ["/admin"], []),
     );
 
     function get_pages(): array
@@ -23,6 +25,8 @@ class Page{
     protected string $path;
     protected bool $add_global_styles = false;
     protected bool $add_menu = false;
+    protected bool $add_footer = false;
+    protected bool $add_includes = true;
     public array $urls = [];
 
     protected function __construct(string $path){
@@ -30,10 +34,14 @@ class Page{
     }
 
     public function start(){
+
         if ($this->add_global_styles){
             echo "<style>";
             include_once "global/css/global.css";
             echo "</style>";
+        }
+        if ($this->add_includes){
+            include_once "global/blocks/includes.php";
         }
         if ($this->add_menu){
             require_once "global/blocks/menu/menu.php";
