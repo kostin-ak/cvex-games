@@ -15,6 +15,8 @@ header("HTTP/1.1 501 Not Implemented");
     <title>Ошибка 501</title>
 </head>
 <body>
-    <h1>501</h1>
+    <div class="main">
+        <h1>501</h1>
+    </div>
 </body>
 </html>

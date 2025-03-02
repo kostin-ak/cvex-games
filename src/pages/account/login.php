@@ -8,6 +8,8 @@
     <title>Вход в систему</title>
 </head>
 <body>
-    <h1>Вход в систему</h1>
+    <div class="main">
+        <h1>Вход в систему</h1>
+    </div>
 </body>
 </html>

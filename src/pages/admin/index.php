@@ -8,6 +8,8 @@
     <title>Admin</title>
 </head>
 <body>
-    <h1>Admin</h1>
+    <div class="main">
+        <h1>Admin</h1>
+    </div>
 </body>
 </html>

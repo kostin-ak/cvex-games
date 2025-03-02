@@ -8,6 +8,8 @@
     <title>Регистрация</title>
 </head>
 <body>
-    <h1>Регистрация</h1>
+    <div class="main">
+        <h1>Регистрация</h1>
+    </div>
 </body>
 </html>
