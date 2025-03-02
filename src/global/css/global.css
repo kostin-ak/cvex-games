@@ -79,13 +79,13 @@ body.dark-theme {
 
 }
 
-*.dark-theme:not(.mobile-menu){
+/*.dark-theme:not(.mobile-menu){
     -webkit-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
     -o-transition: all 0.2s linear;
     transition: all 0.2s linear;
 
-}
+}*/
 
 body {
     font-family: var(--font-family);
@@ -122,12 +122,12 @@ body::-webkit-scrollbar {
     width: 12px;               /* ширина scrollbar */
 }
 body::-webkit-scrollbar-track {
-    background: var(--text-color--light);        /* цвет дорожки */
+    background: var(--background-color--primary);        /* цвет дорожки */
 }
 body::-webkit-scrollbar-thumb {
     background-color: var(--text-color--secondary);    /* цвет плашки */
     border-radius: 20px;       /* закругления плашки */
-    border: 3px solid var(--background-color--secondary);  /* padding вокруг плашки */
+    border: 3px solid var(--background-color--primary);   /* padding вокруг плашки */
 }
 
 .noselect {

@@ -38,6 +38,15 @@
 
 <head>
     <link rel="stylesheet" href="global/blocks/menu/menu.css">
+    <script>
+        $(window).on('load', function() {
+            if (Cookies.get('dark') == "true"){
+                $(".theme-switcher").text("☼");
+            }else{
+                $(".theme-switcher").text("☾");
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -62,6 +71,7 @@
             <?php print_menu($menu_pages);?>
         </ul>
         <?php print_account(); ?>
+        <a class="theme-switcher noselect" onclick="darkMode()"></a>
     </div>
 </div>
 
@@ -75,6 +85,12 @@
 <script>
     function darkMode() {
         document.body.classList.toggle('dark-theme');
+        Cookies.set('dark', $("body").hasClass("dark-theme"));
+        if (Cookies.get('dark') == "true"){
+            $(".theme-switcher").text("☼");
+        }else{
+            $(".theme-switcher").text("☾");
+        }
     }
     $(".mobile-action").on("click", function (){
         $("#nav-icon").toggleClass('open');
