@@ -30,12 +30,17 @@ class Page{
             echo "</style>";
         }
 
+        if ($this->add_footer){
+            require_once "global/blocks/footer/footer.php";
+        }
+
 
     }
 
     public function standard_page(){
         $this->add_global_styles = true;
         $this->add_menu = true;
+        $this->add_footer = true;
     }
 
     public static function standardPage(string $path, array $urls){
