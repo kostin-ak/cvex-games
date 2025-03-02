@@ -1,12 +1,14 @@
 :root {
     /* Основные цвета UI (Фиолетовая тема) */
-    --primary-hue: 270; /* Фиолетовый оттенок */
-    --color--primary: hsl(var(--primary-hue), 70%, 50%); /* Основной фиолетовый */
+    --primary-hue: 10; /* Фиолетовый оттенок */
+    --color--primary: hsl(var(--primary-hue), 70%, 50%);
     --color--primary--hover: hsl(var(--primary-hue), 70%, 45%);
     --color--primary--active: hsl(var(--primary-hue), 80%, 35%);
-    --color--secondary: hsl(220, 50%, 45%); /* Дополнительный синий */
-    --color--secondary--hover: hsl(220, 50%, 40%);
-    --color--accent: hsl(50, 90%, 55%); /* Акцентный жёлтый */
+    --color--secondary: hsl(25, 50%, 45%);
+    --color--secondary--hover: hsl(20, 50%, 40%);
+    --color--tertiary: hsl(0, 0%, 45%);
+    --color--tertiary--hover: hsl(0, 0%, 25%);
+    --color--accent: hsl(50, 90%, 55%);
     --color--accent--hover: hsl(50, 90%, 50%);
 
     /* Цвета текста */
@@ -16,7 +18,7 @@
 
     /* Цвета фона */
     --background-color--primary: #fff;
-    --background-color--secondary: #f9f9f9;
+    --background-color--secondary: #d9d9d9;
 
     /* Границы */
     --border-color: #ebebeb;
@@ -29,7 +31,7 @@
     --shadow-05: 0px 24px 32px rgba(37, 37, 37, 0.1);
 
     /* Типография */
-    --font-family: sans-serif;
+    --font-family: 'Roboto', sans-serif;
     --font-size--base: 16px;
     --line-height--base: 1.5;
 
@@ -40,6 +42,7 @@
 
     /* Радиус скругления */
     --border-radius: 5px;
+    --border-radius-button: 5px;
 }
 
 /* Тёмная тема */
@@ -52,8 +55,12 @@ body.dark-theme {
     --background-color--primary: #121212;
     --background-color--secondary: #1e1e1e;
 
+    --text-color--light: #000;
+
     /* Границы */
     --border-color: #333;
+
+    --color--primary--active: hsl(var(--primary-hue), 80%, 50%);
 
     /* Тени (немного ослаблены для тёмной темы) */
     --shadow-01: 0px 2px 4px rgba(0, 0, 0, 0.3);
@@ -61,6 +68,23 @@ body.dark-theme {
     --shadow-03: 0px 8px 16px rgba(0, 0, 0, 0.3);
     --shadow-04: 0px 16px 24px rgba(0, 0, 0, 0.3);
     --shadow-05: 0px 24px 32px rgba(0, 0, 0, 0.3);
+
+}
+
+*:not(.mobile-menu){
+    /*-webkit-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    transition: all 0.2s linear;*/
+
+}
+
+*.dark-theme:not(.mobile-menu){
+    -webkit-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+
 }
 
 body {
@@ -69,6 +93,9 @@ body {
     line-height: var(--line-height--base);
     background-color: var(--background-color--primary);
     color: var(--text-color--primary);
+
+
+    margin: 0;
 }
 
 .button--primary {
@@ -89,4 +116,26 @@ body {
     padding: var(--spacing--medium);
     background-color: var(--background-color--secondary);
     box-shadow: var(--shadow-01);
+}
+
+body::-webkit-scrollbar {
+    width: 12px;               /* ширина scrollbar */
+}
+body::-webkit-scrollbar-track {
+    background: var(--text-color--light);        /* цвет дорожки */
+}
+body::-webkit-scrollbar-thumb {
+    background-color: var(--text-color--secondary);    /* цвет плашки */
+    border-radius: 20px;       /* закругления плашки */
+    border: 3px solid var(--background-color--secondary);  /* padding вокруг плашки */
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }

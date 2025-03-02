@@ -9,8 +9,8 @@ final class Connection
 
     /**
      * Подключение к базе данных и возврат экземпляра объекта \PDO
-     * @return \PDO
-     * @throws \Exception
+     * @return PDO
+     * @throws Exception
      */
     public function connect()
     {
@@ -30,8 +30,8 @@ final class Connection
             $params['password']
         );
 
-        $pdo = new \PDO($conStr);
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo = new PDO($conStr);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return $pdo;
     }

@@ -1,5 +1,4 @@
 <?php
-
     header("HTTP/1.1 404 Not Found");
 
 ?>
@@ -14,6 +13,8 @@
     <title>Ошибка 404</title>
 </head>
 <body>
-    <h1>404</h1>
+    <div class="main">
+        <h1>404</h1>
+    </div>
 </body>
 </html>

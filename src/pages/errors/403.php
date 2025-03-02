@@ -16,6 +16,8 @@
     <title>Ошибка 403</title>
 </head>
 <body>
-    <h1>403</h1>
+    <div class="main">
+        <h1>403</h1>
+    </div>
 </body>
 </html>
