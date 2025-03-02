@@ -1,0 +1,66 @@
+/* Дополнительные стили для меню (можно перенести в global.css) */
+.menu {
+    background-color: var(--background-color--secondary);
+    padding: var(--spacing--medium);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-01);
+    margin-bottom: var(--spacing--large);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+.menu {
+    padding: 0;
+    margin: 0;
+}
+
+.sub-menu{
+    display: inline-flex;
+}
+
+.menu-login-button{
+    background: var(--color--secondary);
+    color: var(--text-color--secondary);
+}
+
+.menu-buttons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: var(--spacing--medium); /* Расстояние между пунктами меню */
+}
+
+.menu a {
+    display: block;
+    padding: var(--spacing--medium) var(--spacing--medium);
+    text-decoration: none;
+    color: var(--text-color--primary);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s ease;
+}
+
+.menu a:hover {
+    background-color: var(--color--primary--hover);
+    color: var(--text-color--light);
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    top: -15px;
+    right: 20px;
+    scale: 50%;
+    color: var(--text-color--light);
+    border: none;
+    padding: var(--spacing--small) var(--spacing--medium);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: var(--shadow-01);
+}
+
+.dark-mode-toggle:hover {
+    background-color: var(--color--secondary--hover);
+}

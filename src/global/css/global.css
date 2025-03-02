@@ -1,3 +1,92 @@
-html{
-    background-color: #f0f0f0;
+:root {
+    /* Основные цвета UI (Фиолетовая тема) */
+    --primary-hue: 270; /* Фиолетовый оттенок */
+    --color--primary: hsl(var(--primary-hue), 70%, 50%); /* Основной фиолетовый */
+    --color--primary--hover: hsl(var(--primary-hue), 70%, 45%);
+    --color--primary--active: hsl(var(--primary-hue), 80%, 35%);
+    --color--secondary: hsl(220, 50%, 45%); /* Дополнительный синий */
+    --color--secondary--hover: hsl(220, 50%, 40%);
+    --color--accent: hsl(50, 90%, 55%); /* Акцентный жёлтый */
+    --color--accent--hover: hsl(50, 90%, 50%);
+
+    /* Цвета текста */
+    --text-color--primary: #333;
+    --text-color--secondary: #777;
+    --text-color--light: #fff;
+
+    /* Цвета фона */
+    --background-color--primary: #fff;
+    --background-color--secondary: #f9f9f9;
+
+    /* Границы */
+    --border-color: #ebebeb;
+
+    /* Тени */
+    --shadow-01: 0px 2px 4px rgba(37, 37, 37, 0.1);
+    --shadow-02: 0px 4px 8px rgba(37, 37, 37, 0.1);
+    --shadow-03: 0px 8px 16px rgba(37, 37, 37, 0.1);
+    --shadow-04: 0px 16px 24px rgba(37, 37, 37, 0.1);
+    --shadow-05: 0px 24px 32px rgba(37, 37, 37, 0.1);
+
+    /* Типография */
+    --font-family: sans-serif;
+    --font-size--base: 16px;
+    --line-height--base: 1.5;
+
+    /* Отступы и интервалы */
+    --spacing--small: 0.5rem;
+    --spacing--medium: 1rem;
+    --spacing--large: 1.5rem;
+
+    /* Радиус скругления */
+    --border-radius: 5px;
+}
+
+/* Тёмная тема */
+body.dark-theme {
+    /* Цвета текста */
+    --text-color--primary: #eee;
+    --text-color--secondary: #ccc;
+
+    /* Цвета фона */
+    --background-color--primary: #121212;
+    --background-color--secondary: #1e1e1e;
+
+    /* Границы */
+    --border-color: #333;
+
+    /* Тени (немного ослаблены для тёмной темы) */
+    --shadow-01: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-02: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-03: 0px 8px 16px rgba(0, 0, 0, 0.3);
+    --shadow-04: 0px 16px 24px rgba(0, 0, 0, 0.3);
+    --shadow-05: 0px 24px 32px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size--base);
+    line-height: var(--line-height--base);
+    background-color: var(--background-color--primary);
+    color: var(--text-color--primary);
+}
+
+.button--primary {
+    background-color: var(--color--primary);
+    color: var(--text-color--light);
+    border-radius: var(--border-radius);
+    padding: var(--spacing--medium) var(--spacing--large);
+    box-shadow: var(--shadow-02);
+}
+
+.button--primary:hover {
+    background-color: var(--color--primary--hover);
+}
+
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing--medium);
+    background-color: var(--background-color--secondary);
+    box-shadow: var(--shadow-01);
 }
