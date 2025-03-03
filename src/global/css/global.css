@@ -1,11 +1,11 @@
 :root {
     /* Основные цвета UI (Фиолетовая тема) */
     --primary-hue: 10; /* Фиолетовый оттенок */
-    --color--primary: hsl(var(--primary-hue), 70%, 50%);
-    --color--primary--hover: hsl(var(--primary-hue), 70%, 45%);
-    --color--primary--active: hsl(var(--primary-hue), 80%, 35%);
-    --color--secondary: hsl(25, 50%, 45%);
-    --color--secondary--hover: hsl(20, 50%, 40%);
+    --color--primary: hsl(229, 19%, 60%);
+    --color--primary--hover: hsl(229, 19%, 45%);
+    --color--primary--active: hsl(216, 33%, 75%);
+    --color--secondary: hsl(216, 33%, 75%);
+    --color--secondary--hover: hsl(229, 19%, 45%);
     --color--tertiary: hsl(0, 0%, 45%);
     --color--tertiary--hover: hsl(0, 0%, 25%);
     --color--accent: hsl(50, 90%, 55%);
@@ -19,7 +19,9 @@
     /* Цвета фона */
     --background-color--primary: #fff;
     --background-color--primary--alpha: 255,255,255;
-    --background-color--secondary: #efebeb;
+    --background-color--secondary--alpha: 239, 235, 235;
+    --background-color--secondary: rgb(var(--background-color--secondary--alpha));
+
 
     /* Границы */
     --border-color: #ebebeb;
@@ -56,16 +58,17 @@ body.dark-theme {
 
     /* Цвета фона */
     --background-color--primary: #121212;
-    --background-color--secondary: #1e1e1e;
+    --background-color--secondary--alpha: 30, 30, 30;
 
     --background-color--primary--alpha: 18,18,18;
+    --background-color--secondary: rgb(var(--background-color--secondary--alpha));
 
     --text-color--light: #000;
 
     /* Границы */
     --border-color: #333;
 
-    --color--primary--active: hsl(var(--primary-hue), 80%, 50%);
+    --color--primary--active: hsl(210, 14%, 53%);
 
     /* Тени (немного ослаблены для тёмной темы) */
     --shadow-01: 0px 2px 4px rgba(0, 0, 0, 0.3);
