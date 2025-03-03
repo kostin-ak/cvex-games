@@ -1,8 +1,9 @@
 body{
     background-image: var(--background-image);
     background-repeat:repeat-x;
-    background-attachment: fixed;
-    background-position: left 25vh;
+    background-attachment: local;
+    background-position: -10vw 25vh;
+    background-size: 150%;
 }
 
 .main{
@@ -105,6 +106,8 @@ body{
     flex-direction: row;
     justify-content: space-evenly;
 
+    cursor: pointer;
+
     position: relative;
     top: 50vh;
 
@@ -131,6 +134,12 @@ body{
     width: 100%;
 }
 
+.tasks-category img:hover{
+    width: 99%;
+    filter: brightness(1.2);
+    transition: all 0.2s linear;
+}
+
 .task-category hr{
     display: none;
 }
@@ -153,7 +162,8 @@ body{
 @media (max-width: 768px)  {
     .block_main{
         flex-direction: column-reverse;
-        width: 100%;
+        width: 85%;
+        margin: 0em calc(calc(100% - 85%)/2);
     }
     .block_login{
         width: 95%;
@@ -187,18 +197,24 @@ body{
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        width: calc(100vw - 1em);
+        width: calc(100vw - 2em);
     }
 
     .task-category hr{
         display: block;
-        width: 90vw;
+        width: 80vw;
         height: 1px;
         margin-left: 0;
 
         background-color: var(--text-color--secondary);
         margin-bottom: 10px;
         border: none;
+    }
+
+    body{
+        background-size: 250%;
+        background-position: -50vw 25vh;
+        background-attachment: fixed;
     }
 }
 
@@ -207,7 +223,13 @@ body{
         display: none;
     }
     .block_login button{
-        width: 48%;
+        width: 47%;
+    }
+
+    .login_buttons{
+        margin: 0;
+        padding: 0;
+        width: 100%;
     }
 }
 
