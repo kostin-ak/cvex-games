@@ -54,6 +54,12 @@ body.dark-theme{
     transition: all 0.2s linear;
 }
 
+.categories a.in-dev:hover{
+    filter: sepia(20%) grayscale(75%);
+
+    transition: all 0.2s linear;
+}
+
 
 .dark-theme .categories a:not(.in-dev):hover{
     filter: brightness(1.3);
