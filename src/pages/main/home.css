@@ -216,6 +216,13 @@ body{
         background-position: -50vw 25vh;
         background-attachment: fixed;
     }
+    .task-category img{
+        width: 150vw;
+        scale: 1.4;
+        margin: max(10vh, 15vw) 0;
+        object-fit: cover;
+        max-height: min(75vw, 75vh);
+    }
 }
 
 @media (max-width: 400px)  {
@@ -231,6 +238,7 @@ body{
         padding: 0;
         width: 100%;
     }
+
 }
 
 

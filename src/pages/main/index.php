@@ -1,3 +1,7 @@
+<?php
+    include_once "utils/account_utils.php";
+?>
+
 <!doctype html>
 <html lang="ru">
 <head>
@@ -18,7 +22,7 @@
                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci dignissimos earum error inventore iste
                    labore, laboriosam maxime minus, nemo nulla odit omnis perferendis provident quo recusandae tenetur
                    voluptatum! Culpa, quam.</p>
-               <div class="login_buttons">
+               <div class="login_buttons <?php echo AccountUtils::is_signed_in()?"hidden":"";?>">
                    <a href="/login"><button>Войти</button></a>
                    <a href="/signup"><button>Регистрация</button></a>
                </div>
