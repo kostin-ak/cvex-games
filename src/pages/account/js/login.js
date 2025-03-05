@@ -15,7 +15,7 @@ function check_user(){
     var password = $("#password").val();
     var link = $("#link").val();
 
-    if (link == null) link = "/";
+    if (link == "") link = "/";
 
     $.post('/server/auth.php', {login: login, password:password}, function(data){
         if (!data){

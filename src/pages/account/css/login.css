@@ -116,6 +116,11 @@ body{
     .form-group:last-child{
         flex-wrap: wrap;
     }
+
+    .error{
+        font-size: 1em;
+        max-width: 100vw;
+    }
 }
 
 .error{

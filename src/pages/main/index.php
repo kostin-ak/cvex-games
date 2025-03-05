@@ -11,6 +11,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="global/css/global.css">
     <link rel="stylesheet" href="pages/main/home.css">
+    <link rel="stylesheet" href="global/css/pages.css">
     <script src="/global/js/functions.js"></script>
     <title>Основная страница</title>
 </head>

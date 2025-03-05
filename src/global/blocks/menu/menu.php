@@ -6,10 +6,9 @@
 
     $menu_pages = array(
         MenuItem::add("Главная", "/"),
-        MenuItem::add("Страница 1", "#page1", false),
-        MenuItem::add("Страница 2", "#page2"),
-        MenuItem::add("Страница 3", "#page3"),
-        MenuItem::add("Страница 4", "#page4"),
+        MenuItem::add("Категории", "/category"),
+        MenuItem::add("Задания", "/tasks"),
+        MenuItem::add("Рейтинг", "/rating"),
         MenuItem::add("Админ-панель", "/admin", AccountUtils::is_admin())
     );
 

@@ -8,13 +8,9 @@ window.addEventListener('scroll', function() {
 
     start_pose /= document.documentElement.clientHeight;
 
-    //alert(start_pose);
-
     let scrollPosition = window.pageYOffset;
 
     var scroll_pose = scrollPosition/windowHeight;
 
-    //alert(scroll_pose);
-
-    parallaxContainer.style.backgroundPositionY = 25 - scroll_pose * windowWidth/45 + 'vh';
+    parallaxContainer.style.backgroundPositionY = 25 - scroll_pose * windowWidth/30 + 'vh';
 });

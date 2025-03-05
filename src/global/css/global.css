@@ -129,9 +129,10 @@ body {
 
 .card {
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: calc(var(--border-radius)*5);
     padding: var(--spacing--medium);
-    background-color: var(--background-color--secondary);
+    background-color: rgba(var(--background-color--secondary--alpha), 0.8);
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow-01);
 }
 
