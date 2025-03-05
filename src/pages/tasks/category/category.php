@@ -7,12 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="global/css/global.css">
     <link rel="stylesheet" href="global/css/pages.css">
+    <link rel="stylesheet" href="pages/tasks/category/css/category.css">
     <script src="/global/js/functions.js"></script>
-    <title>Admin</title>
+    <title>Категория</title>
 </head>
 <body>
     <div class="main">
-        <h1>Admin</h1>
+        <?php
+            if ($_GET['uuid'] == "in-dev") {
+                echo "<h1>Категория в разработке</h1>";
+            }
+        ?>
     </div>
 </body>
 </html>

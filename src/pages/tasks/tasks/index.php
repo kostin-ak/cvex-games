@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="global/css/global.css">
     <link rel="stylesheet" href="global/css/pages.css">
     <script src="/global/js/functions.js"></script>
-    <title>Admin</title>
+    <title>Задания</title>
 </head>
 <body>
     <div class="main">
-        <h1>Admin</h1>
+        <h1>Задания</h1>
     </div>
 </body>
 </html>

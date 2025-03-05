@@ -11,10 +11,15 @@
     --color--accent: hsl(50, 90%, 55%);
     --color--accent--hover: hsl(50, 90%, 50%);
 
+    --color--error--basic: rgb(144,0,0);
+    --border--color--error--basic--alpha: 241,168,153;
+    --background--error--basic--alpha: 255,110,110;
+
     /* Цвета текста */
     --text-color--primary: #333;
     --text-color--secondary: #777;
     --text-color--light: #fff;
+    --text-color--light-light: #fff;
 
     /* Цвета фона */
     --background-color--primary: #fff;
@@ -64,6 +69,7 @@ body.dark-theme {
     --background-color--secondary: rgb(var(--background-color--secondary--alpha));
 
     --text-color--light: #000;
+    --text-color--light-light: #eed;
 
     /* Границы */
     --border-color: #333;
@@ -78,6 +84,8 @@ body.dark-theme {
     --shadow-05: 0px 24px 32px rgba(0, 0, 0, 0.3);
 
     --background-image: url("/global/images/background_dark.svg");
+
+    --color--error--basic: rgb(241,168,153);
 
 }
 
@@ -121,9 +129,10 @@ body {
 
 .card {
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: calc(var(--border-radius)*5);
     padding: var(--spacing--medium);
-    background-color: var(--background-color--secondary);
+    background-color: rgba(var(--background-color--secondary--alpha), 0.8);
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow-01);
 }
 
@@ -161,4 +170,19 @@ body::-webkit-scrollbar-thumb {
 @font-face {
     font-family: 'HackerFonts'; /*a name to be used later*/
     src: url('/global/fonts/HACKED_Title.ttf'); /*URL to font*/
+}
+
+.hidden{
+    display: none;
+}
+
+html, body{
+    overflow-x: hidden;
+}
+body {
+    position: relative;
+}
+
+.hidden_block{
+    opacity: 0;
 }

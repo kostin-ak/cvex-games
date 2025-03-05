@@ -5,13 +5,15 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/pages/account/login.css">
+    <link rel="stylesheet" href="/pages/account/css/login.css">
     <script src="/global/js/functions.js"></script>
+    <script src="/pages/account/js/login.js"></script>
     <title>Вход в систему</title>
 </head>
 <body>
     <div class="main">
         <div class="main-content">
+            <h1 class="error hidden_block">Не верно введено имя пользователя или пароль!</h1>
             <div class="registration-form">
                 <h1>Вход в систему</h1>
                 <div class="form-group">
@@ -23,7 +25,8 @@
                     <input type="password" id="password" name="password" placeholder="Пароль">
                 </div>
                 <div class="form-group">
-                    <button type="submit">Войти</button>
+                    <input id="link" type="hidden" value="<?php echo $_GET['link'];?>">
+                    <button id="submit" type="submit">Войти</button>
                     <button onclick="window.location.replace('/signup');">Зарегистироваться</button>
                 </div>
             </div>

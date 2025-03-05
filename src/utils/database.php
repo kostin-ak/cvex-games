@@ -1,4 +1,7 @@
 <?php
+
+include_once __DIR__."/../configs/config.php";
+
 final class Connection
 {
     /**
@@ -14,8 +17,9 @@ final class Connection
      */
     public function connect()
     {
+
         // чтение параметров в файле конфигурации ini
-        $params = parse_ini_file('configs/database.ini');
+        $params = parse_ini_file(ROOT.'configs/database.ini');
         if ($params === false) {
             throw new Exception("Error reading database configuration file");
         }

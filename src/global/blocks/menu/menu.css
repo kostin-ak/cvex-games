@@ -63,6 +63,8 @@
     transition: background-color 0.2s ease;
 
     margin-left: 5vw;
+
+    cursor: pointer;
 }
 
 .menu-login-button:hover{
@@ -99,7 +101,7 @@
 }
 
 body.dark-theme .menu-login-button img{
-    filter: invert(100%);
+    filter: invert(80%);
 
 }
 
@@ -297,7 +299,57 @@ body.dark-theme .menu-login-button img{
 
 .theme-switcher:hover{
     background-color: var(--color--tertiary--hover);
-    color: var(--text-color--light);
+    color: var(--text-color--light-light);
     transition: all 0.2s linear;
+}
 
+.account_menu{
+    display: none;
+
+    width: 10%;
+    min-width: 200px;
+    background-color: rgba(var(--background-color--secondary--alpha), 0.8);
+
+    backdrop-filter: blur(10px);
+
+    padding: 1em;
+    border-radius: 0 0 0 calc(var(--border-radius-button)*6);
+
+    position: absolute;
+    right: 0;
+    top: 86px;
+    z-index: 0;
+
+    box-shadow: var(--shadow-01);
+
+
+}
+
+.account_menu.active{
+    display: block;
+    z-index: 999;
+}
+
+.account_menu li{
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    row-gap: 5px;
+    justify-content: left;
+    align-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.account_menu li img{
+    width: 1.5em;
+}
+
+.dark-theme .account_menu li img{
+    filter: invert(0.8);
+}
+
+.account_menu.active ~ .menu{
+    border-radius: 0 0 0 calc(var(--border-radius)*3);
 }

@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="global/css/global.css">
     <link rel="stylesheet" href="global/css/pages.css">
     <script src="/global/js/functions.js"></script>
-    <title>Admin</title>
+    <title>Рейтинг</title>
 </head>
 <body>
-    <div class="main">
-        <h1>Admin</h1>
-    </div>
+<div class="main">
+    <h1>Рейтинг</h1>
+</div>
 </body>
 </html>
