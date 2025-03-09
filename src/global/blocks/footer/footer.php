@@ -1,5 +1,5 @@
 <head>
-    <link rel="stylesheet" href="global/blocks/footer/footer.css">
+    <link rel="stylesheet" href="/global/blocks/footer/footer.css">
 </head>
 
 <body>

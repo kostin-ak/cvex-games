@@ -16,7 +16,7 @@
             $menu = new MenuItem($title, $link);
 
             $uri = $_SERVER['REQUEST_URI'];
-            if ($uri == $menu->link){
+            if ( ($menu->link == "/" and $uri == "/") or ($menu->link != "/" and  strpos($uri, $menu->link) !== false)) {
                 $menu->active = true;
             }
             else if ($active){

@@ -20,9 +20,13 @@ function check_user(){
     $.post('/server/auth.php', {login: login, password:password}, function(data){
         if (!data){
             $(".error").removeClass("hidden_block");
-        }else{
+        }
+        else if (data == "1"){
             //alert(data)
             window.location.href = link;
+        }
+        else {
+            alert(data);
         }
     });
 }

@@ -17,12 +17,12 @@ class Page{
         if ($this->add_includes){
             include_once "global/blocks/includes.php";
         }
+        if (file_exists($this->path)) require_once $this->path;
+        else require_once "pages/errors/501.php";
+
         if ($this->add_menu){
             require_once "global/blocks/menu/menu.php";
         }
-
-        if (file_exists($this->path)) require_once $this->path;
-        else require_once "pages/errors/501.php";
 
         if ($this->add_global_styles){
             echo "<style>";

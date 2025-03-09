@@ -1,11 +1,12 @@
 <?php
 
-    include_once "../utils/database.php";
+    include_once "../configs/config.php";
+    include_once "../utils/db_utils.php";
 
     if (isset($_POST['login'])) {
 
-        $connect = Connection::get();
-        $query = $connect->connect()->query("SELECT * FROM users WHERE username = '{$_POST['login']}' OR mail = '{$_POST['login']}'")->fetch();
+        $query = DBUtils::getInstance()->getUserByLoginOrEmail($_POST['login']);
+
         if ($query) {
             if (password_verify($_POST['password'], $query['password'])) {
                 echo true;

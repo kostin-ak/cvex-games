@@ -8,7 +8,7 @@
     --color--secondary--hover: hsl(229, 19%, 45%);
     --color--tertiary: hsl(0, 0%, 45%);
     --color--tertiary--hover: hsl(0, 0%, 25%);
-    --color--accent: hsl(50, 90%, 55%);
+    --color--accent: var(--color--secondary--hover);
     --color--accent--hover: hsl(50, 90%, 50%);
 
     --color--error--basic: rgb(144,0,0);
@@ -61,6 +61,8 @@ body.dark-theme {
     --text-color--primary: #eee;
     --text-color--secondary: #ccc;
 
+    --color--accent: var(--text-color--primary);
+
     /* Цвета фона */
     --background-color--primary: #121212;
     --background-color--secondary--alpha: 30, 30, 30;
@@ -89,22 +91,6 @@ body.dark-theme {
 
 }
 
-*:not(.mobile-menu){
-    /*-webkit-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    transition: all 0.2s linear;*/
-
-}
-
-/*.dark-theme:not(.mobile-menu){
-    -webkit-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    transition: all 0.2s linear;
-
-}*/
-
 body {
     font-family: var(--font-family);
     font-size: var(--font-size--base);
@@ -113,6 +99,11 @@ body {
     color: var(--text-color--primary);
 
     margin: 0;
+
+}
+
+body:not{.is-animating}{
+    transition: background-color 0.3s ease;
 }
 
 .button--primary {
@@ -132,6 +123,14 @@ body {
     border-radius: calc(var(--border-radius)*5);
     padding: var(--spacing--medium);
     background-color: rgba(var(--background-color--secondary--alpha), 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-01);
+}
+.card-primary {
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--border-radius)*5);
+    padding: var(--spacing--medium);
+    background-color: rgba(var(--background-color--primary--alpha), 0.8);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-01);
 }

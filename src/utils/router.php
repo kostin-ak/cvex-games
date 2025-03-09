@@ -33,6 +33,7 @@ class Router {
         }
 
         if (!$starts) {
+            echo "<h1>ERROR</h1>";
             $page = Page::voidPage("pages/errors/404.php");
             $page->standard_page();
             $page->start();

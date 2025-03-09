@@ -1,7 +1,7 @@
 <?php
 
-    include_once "entities/models/user.php";
-    include_once "entities/models/permissions.php";
+    include_once ROOT."/entities/models/user.php";
+    include_once ROOT."/entities/models/permissions.php";
 
     class AccountUtils{
         static function is_signed_in(){
