@@ -8,12 +8,15 @@ class Categoty{
     private string $image;
 
     private bool $in_dev;
-    public function __construct(string $uuid, string $name, string $description, string $image, bool $in_dev){
+
+    private bool $is_public;
+    public function __construct(string $uuid, string $name, string $description, string $image, bool $in_dev, bool $is_public){
         $this->uuid = $uuid;
         $this->name = $name;
         $this->description = $description;
         $this->image = $image;
         $this->in_dev = $in_dev;
+        $this->is_public = $is_public;
     }
 
     public function getUuid(): string{
@@ -32,8 +35,13 @@ class Categoty{
     public function isInDev(): bool{
         return $this->in_dev;
     }
+    public function isIsPublic(): bool{
+        return $this->is_public;
+    }
 
     public static function fromData(array $data): Categoty{
-        return new Categoty($data['uuid'], $data['name'], $data['description'], $data['image'], $data['in_dev']);
+        return new Categoty($data['uuid'], $data['name'], $data['description'], $data['image'], $data['in_dev'], $data['is_public']);
     }
+
+
 }

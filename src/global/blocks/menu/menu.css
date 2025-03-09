@@ -6,21 +6,18 @@
     box-shadow: var(--shadow-01);
     margin-bottom: var(--spacing--large);
 
-    position: sticky;
-    top: 0; /* Важно указать top: 0; */
-    z-index: 100; /* Убедитесь, что z-index достаточно высок, чтобы меню было поверх контента */
+    position: fixed;
+    top: 0;
+    z-index: 100;
 
     margin-top: 0 !important;
 
-    /*width: calc(100vw - var(--spacing--medium)*3);*/
     display: flex;
     left: 0;
     right: 0;
     flex-direction: row;
-    flex-flow: row wrap;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     align-content: space-between;
 
     backdrop-filter: blur(10px);
@@ -31,7 +28,7 @@
 }
 
 .mobile-menu{
-    position: relative;
+    position: fixed;
 }
 
 .mobile-menu-buttons{
@@ -182,6 +179,11 @@ body.dark-theme .menu-login-button img{
     color: var(--text-color--light);
 }
 
+.mobile-menu-buttons hr{
+    width: calc(100vw - var(--spacing--medium)*4);
+    margin: 2px 15px;
+}
+
 @media (max-width: 840px)  {
     .sub-menu.logo{
         display: none;
@@ -283,7 +285,7 @@ body.dark-theme .menu-login-button img{
 }
 
 .main{
-    margin: 0 1em;
+    margin: 5em 1em;
     min-height: 100vh;
 }
 
@@ -315,9 +317,8 @@ body.dark-theme .menu-login-button img{
     padding: 1em;
     border-radius: 0 0 0 calc(var(--border-radius-button)*6);
 
-    position: absolute;
+    position: fixed;
     right: 0;
-    top: 86px;
     z-index: 0;
 
     box-shadow: var(--shadow-01);
@@ -327,7 +328,7 @@ body.dark-theme .menu-login-button img{
 
 .account_menu.active{
     display: block;
-    z-index: 999;
+    z-index: 99;
 }
 
 .account_menu li{
@@ -352,4 +353,14 @@ body.dark-theme .menu-login-button img{
 
 .account_menu.active ~ .menu{
     border-radius: 0 0 0 calc(var(--border-radius)*3);
+}
+
+/* Define a transition duration during page visits */
+html.is-changing .transition-fade {
+    transition: opacity 0.25s;
+    opacity: 0.5;
+}
+/* Define the styles for the unloaded pages */
+html.is-animating .transition-fade {
+    opacity: 0;
 }

@@ -9,14 +9,11 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="global/css/global.css">
-    <link rel="stylesheet" href="pages/main/home.css">
-    <link rel="stylesheet" href="global/css/pages.css">
-    <script src="/global/js/functions.js"></script>
+    <link rel="stylesheet" href="/pages/main/home.css">
     <title>Основная страница</title>
 </head>
 <body>
-    <div class="main">
+    <div class="main" style="padding-bottom: 500px;">
         <div class="block_main">
            <div class="block_login">
                <h1>Найдите флаг<b>.</b><b>.</b><b>.</b></h1>
@@ -40,7 +37,7 @@
                     quisquam, sapiente soluta temporibus.</p>
                 <hr>
             </div>
-            <div class="task-category"><img src="https://imgholder.ru/512x512/8493a8/adb9ca&textIMAGE+HOLDER&fontkelson"
+            <div class="task-category"><img src="/global/images/task-category/student.svg"
                                             alt="">
                 <h1>Студенты</h1>
                 <p>Adipisci aliquam asperiores autem consequatur corporis culpa cupiditate delectus deleniti dolorum est

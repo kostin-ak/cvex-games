@@ -1,6 +1,6 @@
 <?php
 
-include_once "entities/models/roles.php";
+include_once ROOT."entities/models/roles.php";
 
 class User {
     private string $uuid;
@@ -14,7 +14,11 @@ class User {
 
     private role $role;
 
-    public function __construct($uuid, $username, $name, $sname, $email, $password, $role) {
+    private int $score;
+
+    private $registered;
+
+    public function __construct($uuid, $username, $name, $sname, $email, $password, $role, $score, $registered) {
         $this->uuid = $uuid;
         $this->username = $username;
         $this->name = $name;
@@ -22,6 +26,8 @@ class User {
         $this->email = $email;
         $this->password = $password;
         $this->role = Role::getRuleById($role);
+        $this->score = $score;
+        $this->registered = $registered;
     }
 
     public function getUuid(): string {
@@ -45,9 +51,18 @@ class User {
     public function getRole(): Role {
         return $this->role;
     }
+    public function getScore(): int{
+        return $this->score;
+    }
+
+    public function getRegistered(){
+        return $this->registered;
+    }
 
     public static function getUserByArray($array) {
-        return new User($array["uuid"], $array['username'], $array['name'], $array['sname'],$array['mail'], $array['password'], $array['role']);
+        return new User($array["uuid"], $array['username'], $array['name'], $array['sname'],$array['mail'], $array['password'], $array['role'], $array['score'], $array['registered']);
     }
+
+
 
 }

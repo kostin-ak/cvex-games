@@ -4,6 +4,7 @@
     include_once "utils/router.php";
     include_once "pages.php";
     include_once "utils/database.php";
+    include_once "global/blocks/preinclude.php";
 
     session_start();
 

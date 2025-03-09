@@ -1,6 +1,7 @@
 <?php
 
-    include_once "entities/models/permissions.php";
+    include_once ROOT."/entities/models/permissions.php";
+    include_once ROOT."/configs/config.php";
 
     class Role{
         private int $id;
@@ -8,13 +9,16 @@
         private string $description;
         private int $permissions;
 
+        private string $class;
+
         private static array $RULES = [];
 
-        public function __construct(int $id, string $name, string $description, int $permissions){
+        public function __construct(int $id, string $name, string $description, int $permissions, string $class){
             $this->id = $id;
             $this->name = $name;
             $this->description = $description;
             $this->permissions = $permissions;
+            $this->class = $class;
         }
 
         public function getId(): int
@@ -37,11 +41,7 @@
         public static function getRuleById($id): Role{
 
             if (count(Role::$RULES) == 0){
-                Role::$RULES = array(
-                    new Role(0, "user", "Обычный пользователь", 0),
-                    new Role(1, "root", "Суперпользователь", getRootPermissions()),
-                    new Role(1, "tester", "Тестировщик", getTesterPermissions()),
-                );
+                Role::$RULES = Config::getRoles();
             }
 
             foreach(Role::$RULES as $rule){
@@ -52,6 +52,11 @@
             }
             return Role::$RULES[0];
 
+        }
+
+        public function getClass(): string
+        {
+            return $this->class;
         }
 
     }

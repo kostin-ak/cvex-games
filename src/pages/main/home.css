@@ -1,8 +1,7 @@
 .main{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-bottom: 500px;
+    /*justify-content: center;*/
 }
 
 .block_main{

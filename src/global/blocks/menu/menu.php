@@ -17,7 +17,7 @@
             echo '<a class="menu-login-button" href="/login">Вход</a>';
         }else{
             echo '<a class="menu-login-button account">
-                    <img src="global/images/account.svg" alt="">
+                    <img src="/global/images/account.svg" alt="">
                 </a>';
         }
     }
@@ -36,7 +36,7 @@
 
 
 <head>
-    <link rel="stylesheet" href="global/blocks/menu/menu.css">
+
     <script>
         $(window).on('load', function() {
             if (Cookies.get('dark') == "true"){
@@ -46,10 +46,9 @@
             }
         });
     </script>
-    <script src="/global/blocks/menu/account.js"></script>
 </head>
 
-<body>
+<body id="swup">
 
 <div class="account_menu">
     <ul>
@@ -86,6 +85,7 @@
 <div class="mobile-menu">
     <ul class="mobile-menu-buttons">
         <?php print_menu($menu_pages);?>
+        <hr>
         <a class="menu-item" onclick="darkMode()">Сменить тему</a>
     </ul>
 </div>
@@ -111,7 +111,7 @@
         }else{
             $(".mobile-menu").addClass("active")
             $(".mobile-menu").animate({
-                top:0,
+                top:100,
             }, 500, function() {
                 // Animation complete.
             });
@@ -122,14 +122,14 @@
         if ($(".account_menu").hasClass("active")){
             $(".account_menu").animate({
                 top:-10,
-                opacity:-5
+                opacity:-1
             }, 200, function() {
                 $(".account_menu").removeClass("active")
             });
         }else{
             $(".account_menu").addClass("active")
             $(".account_menu").animate({
-                top:86,
+                top:83,
                 opacity:1
             }, 200, function() {
                 // Animation complete.

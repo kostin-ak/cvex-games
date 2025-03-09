@@ -5,6 +5,8 @@ class permissions_types{
     public const AnswerWithoutRating = "awr";
 }
 
+include_once ROOT."/configs/config.php";
+
 
 class Permission{
     private int $id;
@@ -46,10 +48,7 @@ class Permissions{
 
     public static function getPermissions(){
         if (count(self::$permissions) === 0) {
-            self::$permissions = array(
-                permissions_types::Admin => new Permission(0x01, "Admin", "Admin"),
-                permissions_types::AnswerWithoutRating => new Permission(0x02, "AWR", "Answer Without Rating"),
-            );
+            self::$permissions = Config::getPermissions();
         }
         return Permissions::$permissions;
     }
