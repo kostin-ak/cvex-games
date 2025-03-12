@@ -66,10 +66,11 @@
     </div>
 
     <div class="sub-menu logo">
-        <div class="icon">
-            <img src="<?php echo Config::$APP_ICON?>" alt="">
-        </div>
+
         <a href="/" class="platform_name">
+            <div class="icon">
+                <img src="<?php echo Config::$APP_ICON?>" alt="">
+            </div>
             <?php echo Config::$APP_NAME?>
         </a>
     </div>

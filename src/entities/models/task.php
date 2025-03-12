@@ -17,8 +17,9 @@ class Task {
     private string $branch;
     private int $difficulty;
     private string $category;
+    private int $user_group;
 
-    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category) {
+    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category, int $user_group) {
         $this->uuid = $uuid;
         $this->name = $name;
         $this->description = $description;
@@ -32,6 +33,7 @@ class Task {
         $this->difficulty = $difficulty;
         $this->category = $category;
         $this->create = $create;
+        $this->user_group = $user_group;
     }
 
     public function getUuid(): string {
@@ -89,6 +91,9 @@ class Task {
     public function getCreate(): string{
         return $this->create;
     }
+    public function getUserGroup(): int{
+        return $this->user_group;
+    }
 
     public static function fromData(array $data): self {
 
@@ -109,9 +114,12 @@ class Task {
             (bool)$data['hidden'] ?? true,
             $data['branch'],
             (int)$data['difficulty'] ?? 0,
-            $data['category']
+            $data['category'],
+            $data['user_group']
         );
     }
+
+
 
 
 }

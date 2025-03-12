@@ -52,17 +52,30 @@ class DBUtils{
     public function getTasks($page, $limit, $category = null, $difficulty = null, $user = false, $admin = false) {
         $offset = ($page - 1) * $limit;
 
-
         if ($user) {
-            $query = "SELECT * FROM tasks t WHERE 1=1";
+
+            $user_group = $_SESSION['user']['group'];
+            $user_uuid = $_SESSION['user_uuid'];
+
+            $uuid_need = !$admin?"LEFT JOIN results r ON t.uuid = r.task AND r.user = '".$user_uuid."'":"";
+            $uuid_need2 = !$admin?" AND r.uuid IS NULL":"";
+
+            $query = "SELECT t.* FROM tasks t ".$uuid_need." WHERE 1=1".$uuid_need2;
+
+            if ($user_group != 0){
+                $query .= " AND user_group LIKE '%{$user_group}%'";
+            }
+
+
             if (!$admin) {
                 $query .= " AND t.hidden = false";
             }
         }
         else{
-            $query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-        }
+            //$query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
+            $query = "SELECT t.*, r.popularity FROM tasks t JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
 
+        }
 
         if ($category) {
             $query .= " AND t.category = :category";
@@ -70,7 +83,17 @@ class DBUtils{
         if ($difficulty) {
             $query .= " AND t.difficulty = :difficulty";
         }
+
+
+        if (!$user){
+            $query .= " ORDER BY r.popularity DESC";
+        }else{
+            $query .= " ORDER BY t.create DESC";
+        }
+
+
         $query .= " LIMIT :limit OFFSET :offset";
+
 
         $stmt = $this->connect->prepare($query);
         if ($category) {
@@ -91,13 +114,24 @@ class DBUtils{
 
     public function getTotalPages($limit, $category = null, $difficulty = null, $user = false, $admin = false) {
         if ($user) {
-            $query = "SELECT COUNT(*) FROM tasks t WHERE 1=1";
+            $user_group = $_SESSION['user']['group'];
+            $user_uuid = $_SESSION['user_uuid'];
+
+            $uuid_need = !$admin?"LEFT JOIN results r ON t.uuid = r.task AND r.user = '".$user_uuid."'":"";
+            $uuid_need2 = !$admin?" AND r.uuid IS NULL":"";
+
+            $query = "SELECT COUNT(t.*) FROM tasks t ".$uuid_need." WHERE 1=1".$uuid_need2;
+            if ($user_group != 0){
+                $query .= " AND user_group LIKE '%{$user_group}%'";
+            }
+
             if (!$admin) {
                 $query .= " AND t.hidden = false";
             }
         }
         else{
-            $query = "SELECT COUNT(t.*) FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
+            //$query = "SELECT COUNT(t.*) FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
+            $query = "SELECT COUNT(t.*) FROM tasks t JOIN (SELECT task FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
         }
 
         if ($category) {

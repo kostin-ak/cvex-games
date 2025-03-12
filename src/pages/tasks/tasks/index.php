@@ -69,6 +69,8 @@
                 // Скрываем индикатор загрузки
                 $('#loading').fadeOut();
 
+                //console.log(data)
+
                 if (data.error) {
                     alert(data.error);
                     return;

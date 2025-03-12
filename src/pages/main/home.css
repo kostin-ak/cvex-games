@@ -210,7 +210,7 @@
     .task-category img{
         width: 150vw;
         scale: 1.4;
-        margin: max(10vh, 15vw) 0;
+        margin: max(12vh, 17vw) 0;
         object-fit: cover;
         max-height: min(75vw, 75vh);
     }
