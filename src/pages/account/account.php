@@ -56,6 +56,13 @@
                 </div>
             </div>
         </div>
+        <div>
+            <pre>
+                <?php
+                    var_dump($_SESSION['user']);
+                ?>
+            </pre>
+        </div>
     </div>
 </body>
 </html>

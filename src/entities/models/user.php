@@ -18,7 +18,9 @@ class User {
 
     private $registered;
 
-    public function __construct($uuid, $username, $name, $sname, $email, $password, $role, $score, $registered) {
+    private int $group;
+
+    public function __construct($uuid, $username, $name, $sname, $email, $password, $role, $score, $registered, $group) {
         $this->uuid = $uuid;
         $this->username = $username;
         $this->name = $name;
@@ -28,6 +30,7 @@ class User {
         $this->role = Role::getRuleById($role);
         $this->score = $score;
         $this->registered = $registered;
+        $this->group = $group;
     }
 
     public function getUuid(): string {
@@ -60,7 +63,7 @@ class User {
     }
 
     public static function getUserByArray($array) {
-        return new User($array["uuid"], $array['username'], $array['name'], $array['sname'],$array['mail'], $array['password'], $array['role'], $array['score'], $array['registered']);
+        return new User($array["uuid"], $array['username'], $array['name'], $array['sname'],$array['mail'], $array['password'], $array['role'], $array['score'], $array['registered'], $array['group']);
     }
 
 

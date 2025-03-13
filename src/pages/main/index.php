@@ -45,7 +45,7 @@
                     sapiente totam ullam unde veritatis vitae?</p>
                 <hr>
             </div>
-            <div class="task-category"><img src="https://imgholder.ru/512x512/8493a8/adb9ca&textIMAGE+HOLDER&fontkelson"
+            <div class="task-category"><img src="/global/images/task-category/pro.svg"
                                             alt="">
                 <h1>Профи</h1>
                 <p>Aut cumque deserunt doloremque enim error est eum ex minus natus nisi, obcaecati omnis repellat
