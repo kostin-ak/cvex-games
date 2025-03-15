@@ -2,7 +2,8 @@
     /* Основные цвета UI (Фиолетовая тема) */
     --primary-hue: 10; /* Фиолетовый оттенок */
     --color--primary: hsl(229, 19%, 60%);
-    --color--primary--hover: hsl(229, 19%, 45%);
+    --color--primary--hover: hsl(229, 19%, 60%);
+    --color--primary--alpha: 134, 141, 172;
     --color--primary--active: hsl(216, 33%, 75%);
     --color--secondary: hsl(216, 33%, 75%);
     --color--secondary--hover: hsl(229, 19%, 45%);
