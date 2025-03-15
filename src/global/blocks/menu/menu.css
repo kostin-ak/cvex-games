@@ -29,6 +29,7 @@
 
 .mobile-menu{
     position: fixed;
+    top: -1000px;
 }
 
 .mobile-menu-buttons{
@@ -308,6 +309,9 @@ body.dark-theme .menu-login-button img{
 
 .account_menu{
     display: none;
+
+    top: -10px;
+    opacity: -1;
 
     width: 10%;
     min-width: 200px;

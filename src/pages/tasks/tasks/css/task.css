@@ -1,0 +1,223 @@
+.main{
+    padding: 10px;
+}
+
+.task_info{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+.task_info > div{
+    width: calc(33vw - 100px);
+    margin: auto;
+    display: flex;
+    row-gap: 5px;
+    flex-direction: column;
+    margin: 0 12px;
+}
+
+.task_info > div > p, .task_info > div > p .date{
+    margin: 0;
+    color: var(--text-color--secondary);
+}
+
+.task_info > div span{
+    margin: 0;
+    color: var(--text-color--primary);
+}
+
+.task{
+    padding: 50px; !important;
+    margin: 50px 10px;
+}
+
+@media (max-width: 1070px) {
+    .task_info > p{
+        display: none;
+    }
+    .task_info{
+        padding: 10px;
+    }
+    .task_info > div{
+        margin: 0;
+        min-width: unset;
+        width: 25vw;
+    }
+}
+
+.task .markers{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    row-gap: 30px;
+}
+
+.task .markers .difficulty {
+    width: max-content;
+    margin: 0;
+    margin-top: -10px;
+}
+
+.task .markers .time{
+    min-width: min-content;
+    margin: 0;
+    margin-top: -35px;
+}
+
+.task .markers .time.limited::before{
+    content: "Этот маркер означает, что выполнение \Aданного задания ограниченно по времени!";
+    white-space: pre;
+    padding: 5px;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    top: 10px;
+    opacity: 0;
+    transition-duration: 0.5s;
+    order: 1;
+}
+
+.task .markers .time:hover::before{
+    opacity: 1;
+    transition-duration: 0.5s;
+
+}
+
+.task .markers .difficulty::after{
+    padding: 10px;
+    margin: 0;
+    border-radius: 0 20px 20px 0;
+    margin-left: -17px;
+}
+
+.task .markers .time::after{
+    padding: 10px;
+    margin: 0;
+    border-radius: 20px 0 0 20px;
+    position: relative;
+    left: 17px;
+    order: 2;
+    /*margin-right: -17px;*/
+}
+
+.task .markers .time.limited::after{
+    content: "⏱️ Ограничение!";
+    color: var(--text-color--light);
+    background-color: var(--text-color--secondary);
+}
+
+.task .markers .difficulty.impossible::after{
+    content: "Невозможный 💀";
+    color: var(--text-color--light);
+    background-color: var(--text-color--secondary); /*rgba(0,0,0,0.33);*/
+}
+
+.task .markers .difficulty.hard::after{
+    content: "Сложно 🔥🔥🔥";
+    color: var(--color--error--basic);
+    background-color: rgba(var(--background--error--basic--alpha),0.33);
+    border: rgba(var(--border--color--error--basic--alpha), 1);
+}
+
+.task .markers .difficulty.medium::after{
+    content: "Средний ★★";
+    color: var(--color--accent);
+    background-color: rgba(var(--background--normal--basic--alpha),0.33);
+}
+
+.task .markers .difficulty.easy::after{
+    content: "Легко ★";
+    color: var(--color--good--basic);
+    background-color: rgba(var(--background--good--basic--alpha),0.33);
+}
+
+.task .markers .difficulty.joke::after{
+    content: "Шутка 🎭";
+    color: var(--text-color--light);
+    background-color: var(--text-color--secondary);
+}
+
+.files{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    column-gap: 50px;
+    justify-content: space-evenly;
+}
+
+.file{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    column-gap: 20px;
+}
+
+.file img{
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+    border-radius: calc(var(--border-radius-button)*5);
+    background-color: rgba(var(--background-color--secondary--alpha), 0.7);
+}
+
+.file div{
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+
+.file div > *{
+    margin: 0;
+}
+
+.file div > a{
+    text-decoration: none;
+    color: var(--color--accent);
+
+}
+
+.file div > a:hover{
+    /*text-decoration: underline var(--color--primary) 2px;*/
+    color: var(--color--accent--hover);
+    transition-duration: 0.5s
+}
+
+
+@media (max-width: 960px) {
+    .task_info > div{
+        min-width: calc(48% - 30px);
+        order: 1;
+    }
+
+    .task_info > .started{
+        order: 2;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .task_info > div{
+        min-width: calc(100% - 30px);
+    }
+    .task .markers .time{
+        width: 100vw;
+        padding-right: unset;
+        margin-left: -34px;
+        margin-top: -10px;
+    }
+
+    .task .markers .time::after{
+        content: "Ограничение! ⏱️";
+        border-radius: 0 20px 20px 0;
+        order: 1;
+    }
+
+    .task .markers .time::before{
+        display: none;
+    }
+}
