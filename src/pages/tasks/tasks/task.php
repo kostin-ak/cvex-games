@@ -9,6 +9,14 @@ if(!AccountUtils::is_signed_in()){
     die();
 }else{
     $task = DBUtils::getInstance()->getTaskByUUID($_GET["uuid"]);
+    $passed = DBUtils::getInstance()->getPassedTaskCount($_GET["uuid"]);
+    $firts_blood = DBUtils::getInstance()->getTaskFirstBlood($_GET["uuid"]);
+    if (!$firts_blood){
+        echo "ERROR!";
+    }else {
+        $firts_blood_user = User::getUserByArray($firts_blood);
+    }
+    $started = $_GET["started"];
 }
 
 function getTaskFilesBlock(Task $task){
@@ -45,6 +53,11 @@ function getTaskFilesBlock(Task $task){
     return $text;
 }
 
+function getTimeBlock(){
+    echo "<p>Задание начато в: <span>datetime</span></p>
+                <p>Осталось времени: <span>time</span></p>";
+}
+
 function getDifficulty(Task $task){
     $diffs = array(
             0 => "joke",
@@ -75,21 +88,39 @@ function getTime(Task $task){
 </head>
 <body>
     <div class="main">
-        <!-- <pre>
-            <?php //var_dump($task); ?>
-        </pre> -->
         <div class="task_info">
-            <div class="first_blood card">
-                <p>Первая кровь: <span>#nickname</span></p>
-                <p><span class="date">date</span></p>
+            <div class="first_blood card inner_block">
+                <span class="blood">🩸</span>
+                <div>
+                    <?php
+                        if ($firts_blood){
+                            echo '
+                                <p>Первая кровь: <a href=""><span>#'.$firts_blood_user->getUsername().'</span></a></p>
+                                <p><span class="date">'.date("d.m.Y H:m",strtotime($firts_blood["first_blood_date"])).'</span></p>
+                            ';
+                        }else{
+                            echo '<p>
+                                    Ещё никто не решил это задание!<br>Будьте первым!
+                                    </p>';
+                        }
+                    ?>
+
+                </div>
             </div>
-            <div class="started card">
-                <p>Задание начато в: <span>123456</span></p>
-                <p>Осталось времени: <span>56123</span></p>
+            <div class="started card inner_block">
+                <span class="completed">📝</span>
+                <div>
+                    <?php
+                        echo getTimeBlock($task);
+                    ?>
+                </div>
             </div>
-            <div class="passed card">
-                <p>Выполнили задание: <span>123456</span></p>
-                <p>Награда: <span><?php echo $task->getValueWithMul()?></span></p>
+            <div class="passed card inner_block">
+                <span class="score">🏆</span>
+                <div>
+                    <p>Выполнили задание: <span><?php echo $passed["count"]; ?></span></p>
+                    <p>Награда: <span><?php echo $task->getValueWithMul()?></span></p>
+                </div>
             </div>
         </div>
         <div class="task card">
@@ -103,12 +134,21 @@ function getTime(Task $task){
             <div class="about_task">
                 <p><?php echo $task->getDescription()?></p>
             </div>
-            <button class="start_button">Начать!</button>
-            <hr>
-            <div class="task_description">
-                <p><?php echo $task->getTaskText()?></p>
-                <?php echo getTaskFilesBlock($task)?>
-            </div>
+            <?php
+                if($started){
+                    echo '
+                        <div class="task_description">
+                        <hr>
+                        <p>'.$task->getTaskText().'</p>
+                        '.getTaskFilesBlock($task).'
+                    </div>
+                    ';
+                }else{
+                    echo '<button class="start_button">Начать!</button>';
+                }
+
+            ?>
+
         </div>
     </div>
 </body>

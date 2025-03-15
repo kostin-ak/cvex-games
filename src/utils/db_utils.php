@@ -161,4 +161,24 @@ class DBUtils{
         $task = $stmt->fetch(PDO::FETCH_ASSOC);
         return $task ? Task::fromData($task) : null;
     }
+
+    public function getPassedTaskCount($task_uuid){
+        return $this->connect->query("SELECT COUNT(*) FROM results WHERE task = '".$task_uuid."' AND state = 1")->fetch();
+    }
+
+    public function getTaskFirstBlood($task_uuid){
+        $query = "SELECT 
+                u.* AS us,  -- замените на нужные поля из таблицы users
+                r.date AS first_blood_date
+            FROM 
+                results r
+            JOIN 
+                users u ON r.user = u.uuid
+            WHERE 
+                r.task = '".$task_uuid."'  -- замените на нужный UUID задания
+            ORDER BY 
+                r.date
+            LIMIT 1";
+        return $this->connect->query($query)->fetch();
+    }
 }
