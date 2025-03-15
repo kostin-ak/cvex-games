@@ -25,7 +25,6 @@
 </head>
 <body>
     <div class="main">
-        <h1>Аккаунт</h1>
         <div class="card info_block">
             <div class="account-info-block">
                 <div class="imgholder">

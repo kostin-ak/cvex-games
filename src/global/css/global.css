@@ -9,17 +9,22 @@
     --color--tertiary: hsl(0, 0%, 45%);
     --color--tertiary--hover: hsl(0, 0%, 25%);
     --color--accent: var(--color--secondary--hover);
-    --color--accent--hover: hsl(50, 90%, 50%);
+    --color--accent--hover: hsl(229, 90%, 50%);
 
     --color--error--basic: rgb(144,0,0);
     --border--color--error--basic--alpha: 241,168,153;
     --background--error--basic--alpha: 255,110,110;
+    --background--normal--basic--alpha: 170, 187, 212;
+    --background--good--basic--alpha: 150,230,200;
 
     /* Цвета текста */
     --text-color--primary: #333;
     --text-color--secondary: #777;
     --text-color--light: #fff;
     --text-color--light-light: #fff;
+
+    --color--good--basic: rgb(100,150,100);
+
 
     /* Цвета фона */
     --background-color--primary: #fff;
@@ -88,6 +93,9 @@ body.dark-theme {
     --background-image: url("/global/images/background_dark.svg");
 
     --color--error--basic: rgb(241,168,153);
+    --color--good--basic: rgb(125,250,150);
+
+    --background--good--basic--alpha: 100,175,100;
 
 }
 

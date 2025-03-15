@@ -49,7 +49,7 @@ class DBUtils{
         return 0;
     }
 
-    public function getTasks($page, $limit, $category = null, $difficulty = null, $user = false, $admin = false) {
+    public function getTasks($page, $limit, $category = null, $difficulty = null, $user = false, $admin = false, $with_passed = false) {
         $offset = ($page - 1) * $limit;
 
         if ($user) {
@@ -73,7 +73,8 @@ class DBUtils{
         }
         else{
             //$query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-            $query = "SELECT t.*, r.popularity FROM tasks t JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
+            if ($with_passed) $query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
+            else $query = "SELECT t.*, r.popularity FROM tasks t JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
 
         }
 

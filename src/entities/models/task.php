@@ -17,9 +17,11 @@ class Task {
     private string $branch;
     private int $difficulty;
     private string $category;
+    private string $task_text;
     private int $user_group;
+    private int $time_limit;
 
-    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category, int $user_group) {
+    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category, string $task_text, int $user_group, int $time_limit) {
         $this->uuid = $uuid;
         $this->name = $name;
         $this->description = $description;
@@ -33,7 +35,9 @@ class Task {
         $this->difficulty = $difficulty;
         $this->category = $category;
         $this->create = $create;
+        $this->task_text = $task_text;
         $this->user_group = $user_group;
+        $this->time_limit = $time_limit;
     }
 
     public function getUuid(): string {
@@ -58,6 +62,10 @@ class Task {
 
     public function getValue(): int {
         return $this->value;
+    }
+
+    public function getValueWithMul(float $k=1): int {
+        return $this->value*$k;
     }
 
     public function getAnswer(): string {
@@ -94,6 +102,13 @@ class Task {
     public function getUserGroup(): int{
         return $this->user_group;
     }
+    public function getTaskText(): string{
+        return $this->task_text;
+    }
+
+    public function getTimeLimit(): int {
+        return $this->time_limit;
+    }
 
     public static function fromData(array $data): self {
 
@@ -115,7 +130,9 @@ class Task {
             $data['branch'],
             (int)$data['difficulty'] ?? 0,
             $data['category'],
-            $data['user_group']
+            $data['task_text'] ?? "",
+            $data['user_group'],
+            $data['time_limit'] ?? 0
         );
     }
 
