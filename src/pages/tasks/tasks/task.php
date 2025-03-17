@@ -134,6 +134,7 @@ function getTime(Task $task){
             <div class="about_task">
                 <p><?php echo $task->getDescription()?></p>
             </div>
+            <div>
             <?php
                 if($started){
                     echo '
@@ -144,12 +145,17 @@ function getTime(Task $task){
                     </div>
                     ';
                 }else{
-                    echo '<button class="start_button">Начать!</button>';
+                    echo '<div class="button_holder"><button class="start_button">Начать!</button></div>';
                 }
 
             ?>
-
+            </div>
         </div>
     </div>
+    <script>
+        $(".start_button").on("click", function () {
+            window.location.href += "&started=1";
+        });
+    </script>
 </body>
 </html>

@@ -15,7 +15,7 @@
     <div class="finder">
         <div>
             <label for="category">Категория:</label>
-            <select id="category">
+            <select id="category" class="select">
                 <option value="">Все</option>
                 <!-- Здесь будут загружены категории -->
             </select>
@@ -23,13 +23,12 @@
 
         <div>
             <label for="difficulty">Сложность:</label>
-            <select id="difficulty">
+            <select id="difficulty" class="select">
                 <option value="">Все</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
+                <option value="1">Легко</option>
+                <option value="2">Средне</option>
+                <option value="3">Сложно</option>
+                <option value="4">Невозможно</option>
             </select>
         </div>
 
@@ -200,6 +199,14 @@
     }
 
     $('#filter').on('click', function() {
+        $("#loading").fadeIn();
+        $("#tasks").fadeOut();
+        selectedCategory = $('#category').val();
+        selectedDifficulty = $('#difficulty').val();
+        loadTasks(1); // Сброс страницы на 1 при применении фильтров
+    });
+
+    $('.select').on('change', function() {
         $("#loading").fadeIn();
         $("#tasks").fadeOut();
         selectedCategory = $('#category').val();

@@ -64,16 +64,36 @@
     margin: 50px 10px;
 }
 
+.task .button_holder{
+    width: 100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+
 
 .task .start_button{
-    padding: 10px;
+    padding: 10px 150px;
     color: var(--text-color--light);
     background-color: var(--color--primary);
     border-radius: var(--border-radius-button);
     border: none;
     font-size: 1.5em;
-
+    transition-duration: 0.3s;
+    margin: auto;
 }
+
+.task .start_button:hover{
+    background-color: var(--color--secondary--hover);
+    transition-duration: 0.3s;
+    scale: 0.99;
+}
+
+.task .start_button:active{
+    background-color: var(--color--tertiary--hover);
+    scale: 0.95;
+}
+
 
 @media (max-width: 1070px) {
     .task_info > p{
