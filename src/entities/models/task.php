@@ -1,10 +1,12 @@
 <?php
 
+include_once __DIR__."/../../configs/config.php";
+include_once ROOT."/entities/models/db_model.php";
+
 include_once ROOT."entities/models/category.php";
 include_once ROOT."utils/db_utils.php";
 
-class Task {
-    private string $uuid;
+class Task extends DBModel{
     private string $name;
     private string $description;
     private string $attachment;

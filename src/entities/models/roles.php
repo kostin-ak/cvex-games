@@ -1,9 +1,11 @@
 <?php
 
+    include_once __DIR__."/../../configs/config.php";
     include_once ROOT."/entities/models/permissions.php";
     include_once ROOT."/configs/config.php";
 
-    class Role{
+
+class Role{
         private int $id;
         private string $name;
         private string $description;
