@@ -21,3 +21,14 @@
         }
         return $interval->days." ".number($interval->days, array('день', 'дня', 'дней'));
     }
+
+    function printArrayFormatted($array) {
+        // Преобразуем массив в строку с нужным форматом
+        $formattedArray = array_map(function($item) {
+            // Если элемент является строкой, добавляем кавычки
+            return is_string($item) ? '"' . $item . '"' : $item;
+        }, $array);
+
+        $formattedString = '[' . implode(', ', $formattedArray) . ']';
+        echo $formattedString;
+    }

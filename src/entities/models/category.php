@@ -19,10 +19,6 @@ class Categoty extends DBModel {
         $this->in_dev = $in_dev;
         $this->is_public = $is_public;
     }
-
-    public function getUuid(): string{
-        return $this->uuid;
-    }
     public function getName(): string{
         return $this->name;
     }

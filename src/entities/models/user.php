@@ -35,9 +35,6 @@ class User extends DBModel{
         $this->group = $group;
     }
 
-    public function getUuid(): string {
-        return $this->uuid;
-    }
     public function getUsername(): string {
         return $this->username;
     }

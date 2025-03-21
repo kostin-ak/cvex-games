@@ -5,6 +5,10 @@
             $this->uuid = $uuid;
         }
 
+        public function getUuid(): string{
+            return $this->uuid;
+        }
+
         abstract public static function fromData(array $array);
     }
 ?>

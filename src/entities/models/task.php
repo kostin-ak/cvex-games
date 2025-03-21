@@ -42,9 +42,6 @@ class Task extends DBModel{
         $this->time_limit = $time_limit;
     }
 
-    public function getUuid(): string {
-        return $this->uuid;
-    }
 
     public function getName(): string {
         return $this->name;
