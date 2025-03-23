@@ -2,10 +2,17 @@
     include_once 'utils/account_utils.php';
     include_once "utils/db_utils.php";
     include_once "utils/utils.php";
+    include_once "entities/models/result.php";
+
+    $url = $_SERVER['REQUEST_URI'];
 
     if(!AccountUtils::is_signed_in()){
         header("Location: /login?link=/account", true, 307);
         die();
+    }
+
+    function generate_tab($url){
+        include_once 'pages/account/include/tabs.inc.php';
     }
 
 ?>
@@ -21,6 +28,7 @@
     <link rel="stylesheet" href="/global/css/global.css">
     <link rel="stylesheet" href="/global/css/pages.css">
     <script src="/global/js/functions.js"></script>
+    <script src="/global/js/chart.umd.min.js"></script>
     <title>Аккаунт</title>
 </head>
 <body>
@@ -55,12 +63,10 @@
                 </div>
             </div>
         </div>
-        <div>
-            <pre>
-                <?php
-                    var_dump($_SESSION['user']);
-                ?>
-            </pre>
+        <div class="tabs">
+            <?php
+                generate_tab($url);
+            ?>
         </div>
     </div>
 </body>

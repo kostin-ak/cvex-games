@@ -10,7 +10,7 @@
         Page::standardPage("pages/errors/404.php", []),
         Page::standardPage("pages/errors/403.php", ["/errors/403"]),
         Page::standardPage("pages/admin/index.php", ["/admin"]),
-        Page::standardPage("pages/account/account.php", ["/account"]),
+        Page::standardPageRegexp("pages/account/account.php", ["/\/account/"]),
         Page::standardPage("pages/account/radar_chart.php", ["/account/radar"]),
         Page::standardPage("pages/tasks/category/index.php", ["/category"]),
         Page::standardPageRegexp("pages/tasks/category/category.php", ["/\/category?/"]),

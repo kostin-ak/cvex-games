@@ -1,9 +1,11 @@
 <?php
 
+include_once __DIR__."/../../configs/config.php";
+include_once ROOT."/entities/models/db_model.php";
+
 include_once ROOT."entities/models/roles.php";
 
-class User {
-    private string $uuid;
+class User extends DBModel{
     private string $username;
     private string $name;
 
@@ -33,9 +35,6 @@ class User {
         $this->group = $group;
     }
 
-    public function getUuid(): string {
-        return $this->uuid;
-    }
     public function getUsername(): string {
         return $this->username;
     }
@@ -62,7 +61,7 @@ class User {
         return $this->registered;
     }
 
-    public static function getUserByArray($array) {
+    public static function fromData($array) {
         return new User($array["uuid"], $array['username'], $array['name'], $array['sname'],$array['mail'], $array['password'], $array['role'], $array['score'], $array['registered'], $array['group']);
     }
 

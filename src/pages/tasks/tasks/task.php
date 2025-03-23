@@ -14,7 +14,7 @@ if(!AccountUtils::is_signed_in()){
     if (!$firts_blood){
         echo "ERROR!";
     }else {
-        $firts_blood_user = User::getUserByArray($firts_blood);
+        $firts_blood_user = User::fromData($firts_blood);
     }
     $started = $_GET["started"];
 }

@@ -1,8 +1,9 @@
 <?php
 
-class Categoty{
-    private string $uuid;
+include_once __DIR__."/../../configs/config.php";
+include_once ROOT."/entities/models/db_model.php";
 
+class Categoty extends DBModel {
     private string $name;
     private string $description;
     private string $image;
@@ -17,10 +18,6 @@ class Categoty{
         $this->image = $image;
         $this->in_dev = $in_dev;
         $this->is_public = $is_public;
-    }
-
-    public function getUuid(): string{
-        return $this->uuid;
     }
     public function getName(): string{
         return $this->name;
@@ -39,7 +36,7 @@ class Categoty{
         return $this->is_public;
     }
 
-    public static function fromData(array $data): Categoty{
+    public static function fromData(array $data): self{
         return new Categoty($data['uuid'], $data['name'], $data['description'], $data['image'], $data['in_dev'], $data['is_public']);
     }
 

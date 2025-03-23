@@ -20,7 +20,7 @@
         static function get_user(){
             session_start();
             if(isset($_SESSION['user_uuid']) and $_SESSION['user_uuid'] != null){
-                return User::getUserByArray($_SESSION['user']);
+                return User::fromData($_SESSION['user']);
             }else{
                 return false;
             }
