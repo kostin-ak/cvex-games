@@ -32,14 +32,14 @@ try {
     $difficulty = isset($_GET['difficulty']) ? $_GET['difficulty'] : null;
 
     $db = DBUtils::getInstance();
-    $tasks = $db->getTasks($page, $limit, $category, $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin());
+    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin());
 
     // Проверяем, что $tasks является массивом
     if (!is_array($tasks)) {
         $tasks = []; // Если по какой-то причине это не массив, инициализируем его как пустой
     }
 
-    $totalPages = ceil($db->getTotalPages($limit, $category, $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin()));
+    $totalPages = ceil($db->tasks()->getTotalPages($limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin()));
     $html = generateHTML($tasks);
 
     echo json_encode(['html' => $html, 'totalPages' => $totalPages]);
