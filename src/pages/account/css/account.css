@@ -147,7 +147,7 @@
 
 .tabs .tab-content .radar-chart{
     background-color: var(--background-color--secondary);
-    width: min(500px, calc(100% - 20px));
+    width: min(500px, 100%);
     border-radius: 10px;
     padding: 15px;
 }
