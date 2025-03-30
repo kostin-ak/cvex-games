@@ -5,7 +5,7 @@
 
     if (isset($_POST['login'])) {
 
-        $query = DBUtils::getInstance()->getUserByLoginOrEmail($_POST['login']);
+        $query = DBUtils::getInstance()->users()->getByLoginOrEmail($_POST['login']);
 
         if ($query) {
             if (password_verify($_POST['password'], $query['password'])) {

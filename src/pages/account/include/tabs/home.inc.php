@@ -1,5 +1,5 @@
 <?php
-    $categories_stats = DBUtils::getInstance()->getPercentageOfPassedTasksByCategories($_SESSION['user_uuid']);
+    $categories_stats = DBUtils::getInstance()->results()->getPercentagePassedByCategories($_SESSION['user_uuid']);
 ?>
 
 <canvas id="radarChart" class="radar-chart"></canvas>

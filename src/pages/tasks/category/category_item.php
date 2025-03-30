@@ -37,7 +37,7 @@ function category_item(Categoty $category){
 
 function category_template(){
 
-    $query = DBUtils::getInstance()->getCategoriesList();
+    $query = DBUtils::getInstance()->categories()->getList();
 
     foreach ($query as $category) {
         $category_obj = Categoty::fromData($category);

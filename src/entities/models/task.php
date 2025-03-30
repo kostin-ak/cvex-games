@@ -92,7 +92,7 @@ class Task extends DBModel{
     }
 
     public function getCategoryObj(): Categoty{
-        return Categoty::fromData(DBUtils::getInstance()->getCategoryByUUID($this->category));
+        return Categoty::fromData(DBUtils::getInstance()->categories()->getByUUID($this->category));
     }
 
     public function getCreate(): string{

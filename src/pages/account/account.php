@@ -59,7 +59,7 @@
                         <img src="https://imgholder.ru/48x48/8493a8/adb9ca&text=IMAGE+HOLDER&font=kelson" alt="">
                         <p>Рейтинг: </p>
                     </div>
-                    <p class="accent"><?php echo DBUtils::getInstance()->getRankUserByUUID($_SESSION['user_uuid']); ?></p>
+                    <p class="accent"><?php echo DBUtils::getInstance()->users()->getRankByUUID($_SESSION['user_uuid']); ?></p>
                 </div>
             </div>
         </div>

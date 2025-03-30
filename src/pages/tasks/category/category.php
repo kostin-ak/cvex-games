@@ -18,7 +18,7 @@
                 include_once "configs/config.php";
                 include_once "utils/db_utils.php";
 
-                var_dump(DBUtils::getInstance()->getCategoryByUUID($_GET['uuid']));
+                var_dump(DBUtils::getInstance()->categories()->getByUUID($_GET['uuid']));
             }
         ?>
     </div>

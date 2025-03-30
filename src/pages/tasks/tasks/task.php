@@ -8,9 +8,9 @@ if(!AccountUtils::is_signed_in()){
     header("Location: /login?link=$_SERVER[REQUEST_URI]", true, 307);
     die();
 }else{
-    $task = DBUtils::getInstance()->getTaskByUUID($_GET["uuid"]);
-    $passed = DBUtils::getInstance()->getPassedTaskCount($_GET["uuid"]);
-    $firts_blood = DBUtils::getInstance()->getTaskFirstBlood($_GET["uuid"]);
+    $task = DBUtils::getInstance()->tasks()->getByUUID($_GET["uuid"]);
+    $passed = DBUtils::getInstance()->tasks()->getPassedCount($_GET["uuid"]);
+    $firts_blood = DBUtils::getInstance()->tasks()->getFirstBlood($_GET["uuid"]);
     if (!$firts_blood){
         echo "ERROR!";
     }else {
