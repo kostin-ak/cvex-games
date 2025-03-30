@@ -222,19 +222,24 @@ class TasksTable extends BaseTable {
 
 class ResultsTable extends BaseTable {
     public function getCompletedByUser(string $user_uuid): array {
-        $query = "SELECT r.*, t.*, c.uuid AS category_uuid
+        $query = "SELECT r.*, t.*, c.uuid AS category_uuid, c.in_dev
                 FROM results r
                 JOIN tasks t ON r.task = t.uuid
                 JOIN categories c ON t.category = c.uuid
-                WHERE r.state = 1 AND r.user = :user_uuid";
+                WHERE r.state = 1 AND r.user = :user_uuid AND c.in_dev = false";
 
         $results = $this->executeQuery($query, [':user_uuid' => $user_uuid])->fetchAll(PDO::FETCH_ASSOC);
 
         $completedTasks = [];
         foreach ($results as $row) {
+            // Пропускаем задачи из категорий в разработке
+            if ($row['in_dev']) {
+                continue;
+            }
+
             $resultFields = array_intersect_key($row, array_flip(['uuid', 'user', 'task', 'state', 'date']));
             $taskFields = array_diff_key($row, $resultFields);
-            unset($taskFields['category_uuid']);
+            unset($taskFields['category_uuid'], $taskFields['in_dev']);
             $taskFields['uuid'] = $row['task'];
             $completedTasks[] = array_merge($resultFields, ['task' => $taskFields]);
         }
@@ -242,13 +247,13 @@ class ResultsTable extends BaseTable {
         return $completedTasks;
     }
 
-    public function getCompletedByUserAsObjects(string $user_uuid): array {
-        $results = $this->getCompletedByUser($user_uuid);
-        return array_map([Result::class, 'fromData'], $results);
-    }
-
     public function getCountPassedByCategories(string $user_uuid): array {
-        $categories = (new CategoriesTable())->getList();
+        $query = "SELECT c.name, c.in_dev 
+                FROM categories c 
+                WHERE c.in_dev = false
+                ORDER BY c.name";
+        $categories = $this->executeQuery($query)->fetchAll(PDO::FETCH_ASSOC);
+
         $countByCategories = array_column($categories, 'name');
         $countByCategories = array_fill_keys($countByCategories, 0);
 
@@ -256,7 +261,7 @@ class ResultsTable extends BaseTable {
                 FROM results r
                 JOIN tasks t ON r.task = t.uuid
                 JOIN categories c ON t.category = c.uuid
-                WHERE r.state = 1 AND r.user = :user_uuid
+                WHERE r.state = 1 AND r.user = :user_uuid AND c.in_dev = false
                 GROUP BY c.name";
 
         $results = $this->executeQuery($query, [':user_uuid' => $user_uuid])->fetchAll(PDO::FETCH_ASSOC);
@@ -269,6 +274,76 @@ class ResultsTable extends BaseTable {
         return $countByCategories;
     }
 
+    public function getCountPassedAndTotalByCategories(
+        string $user_uuid,
+        ?string $user_group = null
+    ): array {
+        if ($user_group == 0) $user_group = null;
+
+        // Получаем список категорий, не находящихся в разработке
+        $query = "SELECT c.name, c.in_dev 
+                FROM categories c 
+                WHERE c.in_dev = false
+                ORDER BY c.name";
+        $categories = $this->executeQuery($query)->fetchAll(PDO::FETCH_ASSOC);
+
+        // Получаем количество выполненных заданий по категориям (только не in_dev)
+        $passedQuery = "SELECT c.name AS category_name, COUNT(r.task) AS task_count
+                   FROM results r
+                   JOIN tasks t ON r.task = t.uuid
+                   JOIN categories c ON t.category = c.uuid
+                   WHERE r.state = 1 AND r.user = :user_uuid AND c.in_dev = false";
+
+        if ($user_group !== null) {
+            $passedQuery .= " AND t.user_group LIKE :user_group";
+        }
+
+        $passedQuery .= " GROUP BY c.name";
+
+        $passedParams = [':user_uuid' => $user_uuid];
+        if ($user_group !== null) {
+            $passedParams[':user_group'] = "%{$user_group}%";
+        }
+
+        $passedCounts = $this->executeQuery($passedQuery, $passedParams)
+            ->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        // Получаем общее количество заданий по категориям (только не in_dev)
+        $totalQuery = "SELECT c.name AS category_name, COUNT(t.uuid) AS total_tasks
+                  FROM tasks t
+                  JOIN categories c ON t.category = c.uuid
+                  WHERE t.hidden = false AND c.in_dev = false";
+
+        if ($user_group !== null) {
+            $totalQuery .= " AND t.user_group LIKE :user_group";
+        }
+
+        $totalQuery .= " GROUP BY c.name";
+
+        $totalParams = [];
+        if ($user_group !== null) {
+            $totalParams[':user_group'] = "%{$user_group}%";
+        }
+
+        $totalCounts = $this->executeQuery($totalQuery, $totalParams)
+            ->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        // Формируем итоговый массив только для категорий не в разработке
+        $result = [];
+        foreach ($categories as $category) {
+            $categoryName = $category['name'];
+            $passed = $passedCounts[$categoryName] ?? 0;
+            $total = $totalCounts[$categoryName] ?? 0;
+
+            $result[$categoryName] = [
+                'passed' => $passed,
+                'total' => $total
+            ];
+        }
+
+        ksort($result);
+        return $result;
+    }
     public function getPercentagePassedByCategories(string $user_uuid): array {
         $countByCategories = $this->getCountPassedByCategories($user_uuid);
         $totalCount = array_sum($countByCategories);
