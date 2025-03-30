@@ -1,0 +1,10 @@
+.achievements-account-block{
+    background-color: #cccccc;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(var(--background-color--primary--alpha), 0.5);
+    backdrop-filter: blur(25px);
+    padding: 20px;
+    width: calc(100% - 60px);
+    border-radius: 10px;
+}

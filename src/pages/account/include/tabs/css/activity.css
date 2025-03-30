@@ -1,0 +1,67 @@
+.activity-account-block{
+    background-color: rgba(var(--background-color--primary--alpha), 0.5);
+    backdrop-filter: blur(25px);
+    padding: 20px;
+    width: calc(100% - 60px);
+    border-radius: 10px;
+}
+
+.activity-account-block{
+
+}
+
+.activity-account-block .activity-account-block-date{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+}
+
+.activity-account-block .activity-account-block-date .date_splitter{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.activity-account-block .activity-account-block-date .date_splitter hr{
+    width: 100%;
+    margin: 10px;
+    height: 0px;
+}
+
+.activity-account-block .activity-account-block-item{
+    background-color: rgba(var(--background-color--secondary--alpha, 0.7));
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.activity-account-block .activity-account-block-item h3{
+    margin: 0;
+    margin-bottom: 7px;
+}
+
+.activity-account-block .activity-account-block-item .score{
+    background-color: rgba(var(--background--good--basic--alpha), 0.33);
+    color: var(--color--good--basic);
+    width: 150px;
+    text-align: center;
+    padding: 7px;
+    border-radius: 10px;
+}
+
+.activity-account-block .activity-account-block-item .data .date{
+    color: var(--text-color--secondary);
+}
+
+@media (max-width: 600px){
+
+    .activity-account-block .activity-account-block-item .score{
+        width: 100%;
+    }
+
+}

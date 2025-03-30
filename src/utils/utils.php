@@ -32,3 +32,20 @@
         $formattedString = '[' . implode(', ', $formattedArray) . ']';
         echo $formattedString;
     }
+
+    function _group_by($array, $key) {
+        $return = array();
+        foreach($array as $val) {
+            $return[$val[$key]][] = $val;
+        }
+        return $return;
+    }
+    function group_by_date($array) {
+        foreach($array as $kay => $val) {
+            $date = strtotime($val['date']);
+            $date = date("d.m.Y",$date);
+            $array[$kay]['date_wot'] = $date;
+        }
+
+        return _group_by($array, 'date_wot');
+    }
