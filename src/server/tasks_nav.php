@@ -26,7 +26,7 @@ function generateHTML($tasks) {
 try {
     //sleep(5);
 
-    $limit = 5; // Количество записей на странице
+    $limit = 15; // Количество записей на странице
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $category = isset($_GET['category']) ? $_GET['category'] : null;
     $difficulty = isset($_GET['difficulty']) ? $_GET['difficulty'] : null;

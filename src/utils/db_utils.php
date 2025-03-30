@@ -31,11 +31,11 @@ class DBUtils{
         return $this->connect->query("SELECT * FROM categories WHERE uuid = '{$uuid}'")->fetch();
     }
 
-    public function getUserByLoginOrEmail($login){
-        $user = $this->connect->query("SELECT * FROM users WHERE username = '{$login}' OR mail = '{$login}'")->fetch();
-        return $user;
+    public function getUserByLoginOrEmail($login) {
+        $stmt = $this->connect->prepare("SELECT * FROM users WHERE username = :login OR mail = :login");
+        $stmt->execute([':login' => $login]);
+        return $stmt->fetch();
     }
-
     public function getRankUserByUUID($uuid){
         $rank = $this->connect->query("SELECT rank FROM (
                                                 SELECT dense_rank() OVER w AS rank, *
@@ -53,31 +53,7 @@ class DBUtils{
     public function getTasks($page, $limit, $category = null, $difficulty = null, $user = false, $admin = false, $with_passed = false) {
         $offset = ($page - 1) * $limit;
 
-        if ($user) {
-
-            $user_group = $_SESSION['user']['group'];
-            $user_uuid = $_SESSION['user_uuid'];
-
-            $uuid_need = !$admin?"LEFT JOIN results r ON t.uuid = r.task AND r.user = '".$user_uuid."'":"";
-            $uuid_need2 = !$admin?" AND r.uuid IS NULL":"";
-
-            $query = "SELECT t.* FROM tasks t ".$uuid_need." WHERE 1=1".$uuid_need2;
-
-            if ($user_group != 0){
-                $query .= " AND user_group LIKE '%{$user_group}%'";
-            }
-
-
-            if (!$admin) {
-                $query .= " AND t.hidden = false";
-            }
-        }
-        else{
-            //$query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-            if ($with_passed) $query = "SELECT t.* FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-            else $query = "SELECT t.*, r.popularity FROM tasks t JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-
-        }
+        $query = $this->buildTasksQuery($user, $admin);
 
         if ($category) {
             $query .= " AND t.category = :category";
@@ -86,18 +62,16 @@ class DBUtils{
             $query .= " AND t.difficulty = :difficulty";
         }
 
-
-        if (!$user){
+        if (!$user) {
             $query .= " ORDER BY r.popularity DESC";
-        }else{
+        } else {
             $query .= " ORDER BY t.create DESC";
         }
 
-
         $query .= " LIMIT :limit OFFSET :offset";
 
-
         $stmt = $this->connect->prepare($query);
+
         if ($category) {
             $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         }
@@ -109,32 +83,11 @@ class DBUtils{
         $stmt->execute();
 
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Если нет задач, возвращаем пустой массив
         return $tasks ? array_map([Task::class, 'fromData'], $tasks) : [];
     }
 
     public function getTotalPages($limit, $category = null, $difficulty = null, $user = false, $admin = false) {
-        if ($user) {
-            $user_group = $_SESSION['user']['group'];
-            $user_uuid = $_SESSION['user_uuid'];
-
-            $uuid_need = !$admin?"LEFT JOIN results r ON t.uuid = r.task AND r.user = '".$user_uuid."'":"";
-            $uuid_need2 = !$admin?" AND r.uuid IS NULL":"";
-
-            $query = "SELECT COUNT(t.*) FROM tasks t ".$uuid_need." WHERE 1=1".$uuid_need2;
-            if ($user_group != 0){
-                $query .= " AND user_group LIKE '%{$user_group}%'";
-            }
-
-            if (!$admin) {
-                $query .= " AND t.hidden = false";
-            }
-        }
-        else{
-            //$query = "SELECT COUNT(t.*) FROM tasks t JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-            $query = "SELECT COUNT(t.*) FROM tasks t JOIN (SELECT task FROM results GROUP BY task) r ON t.uuid = r.task JOIN categories c ON t.category = c.uuid WHERE c.is_public = true AND t.hidden = false";
-        }
+        $query = "SELECT COUNT(t.*) FROM (" . $this->buildTasksQuery($user, $admin) . ") t";
 
         if ($category) {
             $query .= " AND t.category = :category";
@@ -143,15 +96,17 @@ class DBUtils{
             $query .= " AND t.difficulty = :difficulty";
         }
 
-        $totalStmt = $this->connect->prepare($query);
+        $stmt = $this->connect->prepare($query);
+
         if ($category) {
-            $totalStmt->bindParam(':category', $category, PDO::PARAM_STR);
+            $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         }
         if ($difficulty) {
-            $totalStmt->bindParam(':difficulty', $difficulty, PDO::PARAM_INT);
+            $stmt->bindParam(':difficulty', $difficulty, PDO::PARAM_INT);
         }
-        $totalStmt->execute();
-        return ceil($totalStmt->fetchColumn()/$limit);
+
+        $stmt->execute();
+        return ceil($stmt->fetchColumn() / $limit);
     }
 
 
@@ -294,5 +249,33 @@ class DBUtils{
             array_push($resultat, Result::fromData($result));
         }
         return $resultat;
+    }
+
+    private function buildTasksQuery($user, $admin) {
+        $query = "SELECT t.* FROM tasks t";
+
+        if ($user) {
+            $user_uuid = $_SESSION['user_uuid'];
+            if (!$admin) {
+                $query .= " LEFT JOIN results r ON t.uuid = r.task AND r.user = '".$user_uuid."'";
+                $query .= " WHERE r.uuid IS NULL";
+            }
+
+            $user_group = $_SESSION['user']['group'];
+            if ($user_group != 0) {
+                $query .= " AND t.user_group LIKE '%{$user_group}%'";
+            }
+
+            if (!$admin) {
+                $query .= " AND t.hidden = false";
+            }
+        } else {
+            $query = "SELECT t.*, r.popularity FROM tasks t ".
+                "JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ".
+                "ON t.uuid = r.task JOIN categories c ON t.category = c.uuid ".
+                "WHERE c.is_public = true AND t.hidden = false";
+        }
+
+        return $query;
     }
 }
