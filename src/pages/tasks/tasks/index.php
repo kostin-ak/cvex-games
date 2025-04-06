@@ -4,240 +4,300 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/pages/tasks/tasks/css/tasks.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/pages/tasks/tasks/css/task_item.css">
     <title>Задания</title>
-    <style>
-
-    </style>
 </head>
 <body>
 
 <div class="main">
-    <div class="finder">
-        <div>
-            <label for="category">Категория:</label>
-            <select id="category" class="select">
-                <option value="">Все</option>
-                <!-- Здесь будут загружены категории -->
+    <div class="tasks-section">
+<div class="main-container">
+    <!-- Фильтры с иконками -->
+    <div class="filters-panel">
+        <div class="filter-group">
+            <i class="fas fa-filter filter-icon"></i>
+            <select id="category" class="styled-select">
+                <option value="">Все категории</option>
+                <!-- Категории будут загружены динамически -->
             </select>
         </div>
 
-        <div>
-            <label for="difficulty">Сложность:</label>
-            <select id="difficulty" class="select">
-                <option value="">Все</option>
+        <div class="filter-group">
+            <i class="fas fa-signal difficulty-icon"></i>
+            <select id="difficulty" class="styled-select">
+                <option value="">Любая сложность</option>
                 <option value="1">Легко</option>
                 <option value="2">Средне</option>
                 <option value="3">Сложно</option>
-                <option value="4">Невозможно</option>
+                <option value="4">Эксперт</option>
             </select>
         </div>
 
-        <button id="filter">Применить фильтр</button>
+        <button id="filter" class="apply-btn">
+            <i class="fas fa-sliders-h"></i> Применить
+        </button>
     </div>
 
-    <div class="loading-container">
-        <div class="loader">
-            <div class="loader-circle"></div>
-            <div class="loader-circle"></div>
-            <div class="loader-circle"></div>
-            <div class="loader-circle"></div>
+    <!-- Анимированный лоадер -->
+    <div class="loading-overlay">
+        <div class="loader-content">
+            <div class="spinner">
+                <div class="double-bounce1"></div>
+                <div class="double-bounce2"></div>
+            </div>
+            <div class="loading-message">Загрузка заданий...</div>
         </div>
-        <div class="loading-text">Загрузка рейтинга...</div>
     </div>
 
-    <div id="tasks" style="display: none;"></div>
+    <!-- Контейнер для заданий -->
+    <div id="tasks-container" class="tasks-grid"></div>
 
-    <div id="pagination" class="pagination" style="display: none;"></div>
+    <!-- Пагинация с эффектом перехода -->
+    <div id="pagination" class="pagination-wrapper"></div></div>
 </div>
 
 <script>
-    let currentPage = 1;
-    let selectedCategory = '';
-    let selectedDifficulty = '';
-    let totalPages = 0;
+    // Текущие параметры фильтрации
+    const state = {
+        page: 1,
+        category: '',
+        difficulty: '',
+        totalPages: 0
+    };
 
-    function showLoading() {
-        $('.loading-container').css('display', 'flex').hide().fadeIn(200);
-    }
-
-    function hideLoading() {
-        $('.loading-container').fadeOut(200);
-    }
-
-    function loadTasks(page, selected_category, selected_difficulty) {
+    // Инициализация загрузчика задач
+    async function loadTasks(page = state.page, category = state.category, difficulty = state.difficulty) {
         showLoading();
-        $("#tasks").fadeOut();
+        $('#tasks-container').fadeOut(200);
 
-        if (selected_category == undefined) selected_category = selectedCategory;
-        if (selected_difficulty == undefined) selected_difficulty = selectedDifficulty;
+        try {
+            const response = await $.ajax({
+                url: '/server/tasks_nav.php',
+                type: 'GET',
+                data: { page, category, difficulty },
+                dataType: 'json'
+            });
 
-        // Показываем индикатор загрузки
-        $('.loading-container').fadeIn();
+            if (response.error) {
+                showError(response.error);
+                return;
+            }
 
-        $.ajax({
-            url: '/server/tasks_nav.php',
-            type: 'GET',
-            data: {
-                page: page,
-                category: selected_category,
-                difficulty: selected_difficulty
-            },
-            dataType: 'json',
-            success: function(data) {
-                // Скрываем индикатор загрузки
-                hideLoading();
+            updateState(response, page, category, difficulty);
+            renderTasks(response);
+            updatePagination(response.totalPages);
+            updateURL();
 
-                //console.log(data)
+        } catch (error) {
+            showError('Ошибка при загрузке задач');
+        } finally {
+            hideLoading();
+            $('#tasks-container').fadeIn(300);
+        }
+    }
 
-                if (data.error) {
-                    alert(data.error);
-                    return;
+    // Обновление состояния
+    function updateState(data, page, category, difficulty) {
+        state.page = page;
+        state.category = category;
+        state.difficulty = difficulty;
+        state.totalPages = data.totalPages || 0;
+    }
+
+    // Рендер задач
+    function renderTasks(data) {
+        const $container = $('#tasks-container').html(data.html || '');
+
+        // Анимация появления карточек
+        $container.find('.task').each(function(index) {
+            $(this).delay(100 * index).fadeIn(200);
+
+            // Добавьте создание частиц здесь
+            const $card = $(this);
+            if (!$card.find('.task-card-particles').length) { // Проверка, чтобы не создавать частицы повторно
+                const $particlesContainer = $('<div class="task-card-particles"></div>');
+                $card.append($particlesContainer);
+
+                const particleCount = Math.floor($card.width() / 8);
+
+                for (let i = 0; i < particleCount; i++) {
+                    const size = Math.random() * 7 + 1;
+                    const posX = Math.random() * $card.width();
+                    const duration = Math.random() * 10 + 7;
+                    const delay = Math.random() * -20;
+
+                    $('<div class="task-card-particle"></div>')
+                        .css({
+                            'width': `${size}px`,
+                            'height': `${size}px`,
+                            'left': `${posX}px`,
+                            'bottom': `-${size}px`,
+                            'animation-duration': `${duration}s`,
+                            'animation-delay': `${delay}s`
+                        })
+                        .appendTo($particlesContainer);
                 }
-                $('#tasks').html(data.html);
-                totalPages = data.totalPages;
-                setupPagination(data.totalPages);
-                // Обновляем URL
-                let url = `?page=${page}`;
-                if (selectedCategory) {
-                    url += `&category=${selectedCategory}`;
-                }
-                if (selectedDifficulty) {
-                    url += `&difficulty=${selectedDifficulty}`;
-                }
-                history.pushState(null, '', url);
-                $("#pagination").fadeIn();
-                $("#tasks").fadeIn()
-            },
-            error: function() {
-                // Скрываем индикатор загрузки
-                hideLoading();
-
-                alert('Ошибка при загрузке задач.');
             }
         });
     }
 
-    function setupPagination(totalPages) {
-        $('#pagination').empty();
+    // Обновление пагинации
+    function updatePagination(totalPages) {
+        const $pagination = $('#pagination').empty();
+        if (totalPages <= 1) return;
 
-        const maxButtons = 5;
+        const buttons = [];
+        const maxVisible = 5;
+        let startPage, endPage;
 
-        if (totalPages <= maxButtons) {
-            for (let i = 1; i <= totalPages; i++) {
-                $('#pagination').append(`<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`);
-            }
+        if (totalPages <= maxVisible) {
+            startPage = 1;
+            endPage = totalPages;
         } else {
-            // Стрелка влево
-            if (currentPage > 1) {
-                $('#pagination').append(`<button class="page-btn" data-page="${currentPage - 1}">&laquo;</button>`);
-            }
+            const maxVisibleBefore = Math.floor(maxVisible / 2);
+            const maxVisibleAfter = Math.ceil(maxVisible / 2) - 1;
 
-            $('#pagination').append(`<button class="page-btn ${currentPage === 1 ? 'active' : ''}" data-page="1">1</button>`);
-
-            if (currentPage > 3) {
-                $('#pagination').append(`<span>...</span>`);
-            }
-
-            let startPage = Math.max(2, currentPage - 1);
-            let endPage = Math.min(totalPages - 1, currentPage + 1);
-
-            for (let i = startPage; i <= endPage; i++) {
-                $('#pagination').append(`<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`);
-            }
-
-            if (currentPage < totalPages - 2) {
-                $('#pagination').append(`<span>...</span>`);
-            }
-
-            $('#pagination').append(`<button class="page-btn ${currentPage === totalPages ? 'active' : ''}" data-page="${totalPages}">${totalPages}</button>`);
-
-            // Стрелка вправо
-            if (currentPage < totalPages) {
-                $('#pagination').append(`<button class="page-btn" data-page="${currentPage + 1}">&raquo;</button>`);
+            if (state.page <= maxVisibleBefore) {
+                startPage = 1;
+                endPage = maxVisible;
+            } else if (state.page + maxVisibleAfter >= totalPages) {
+                startPage = totalPages - maxVisible + 1;
+                endPage = totalPages;
+            } else {
+                startPage = state.page - maxVisibleBefore;
+                endPage = state.page + maxVisibleAfter;
             }
         }
+
+        // Кнопка "Назад"
+        if (state.page > 1) {
+            buttons.push(`
+                <button class="page-btn prev-next" data-page="${state.page - 1}">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `);
+        }
+
+        // Первая страница
+        if (startPage > 1) {
+            buttons.push(createPageButton(1));
+            if (startPage > 2) buttons.push('<span class="dots">...</span>');
+        }
+
+        // Основные страницы
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(createPageButton(i));
+        }
+
+        // Последняя страница
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) buttons.push('<span class="dots">...</span>');
+            buttons.push(createPageButton(totalPages));
+        }
+
+        // Кнопка "Вперед"
+        if (state.page < totalPages) {
+            buttons.push(`
+                <button class="page-btn prev-next" data-page="${state.page + 1}">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `);
+        }
+
+        $pagination.html(buttons.join('')).fadeIn(300);
     }
 
-    $(document).on('click', '.page-btn', function() {
-        $(".loading-container").fadeIn();
-        $("#tasks").fadeOut();
-        window.scrollTo(0, 0);
-        currentPage = $(this).data('page');
-        loadTasks(currentPage);
-    });
+    function createPageButton(page) {
+        const active = page === state.page ? 'active' : '';
+        return `
+            <button class="page-btn ${active}" data-page="${page}">
+                ${page}
+            </button>
+        `;
+    }
 
+    // Обработчики событий
+    $(document)
+        .on('click', '.page-btn', function() {
+            scrollToTop();
+            loadTasks($(this).data('page'));
+        })
+        .on('click', '#filter', applyFilters)
+        .on('change', '.styled-select', applyFilters);
+
+    // Инициализация страницы
     $(document).ready(function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get('page');
-        selectedCategory = urlParams.get('category') || '';
-        selectedDifficulty = urlParams.get('difficulty') || '';
-
-        $('#category').val(selectedCategory);
-        $('#difficulty').val(selectedDifficulty);
-
-        currentPage = page ? parseInt(page) : 1;
-
-        loadTasks(page ? parseInt(page) : currentPage);
+        initFromURL();
+        loadCategories();
     });
 
-    // Обработка состояния при навигации
-    window.onpopstate = function(event) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get('page');
-        selectedCategory = urlParams.get('category') || '';
-        selectedDifficulty = urlParams.get('difficulty') || '';
+    // Вспомогательные функции
+    function scrollToTop() {
+        $('html, body').animate({ scrollTop: 0 }, 300);
+    }
 
-        $('#category').val(selectedCategory);
-        $('#difficulty').val(selectedDifficulty);
+    function showLoading() {
+        $('.loading-overlay').css('display', 'flex').hide().fadeIn(200);
+    }
 
-        currentPage = page ? parseInt(page) : 1;
-        loadTasks(currentPage);
+    function hideLoading() {
+        $('.loading-overlay').fadeOut(200);
+    }
 
-    };
+    function showError(message) {
+        const $error = $(`<div class="error-message">${message}</div>`);
+        $('#tasks-container').html($error.fadeIn());
+    }
+
+    function applyFilters() {
+        state.category = $('#category').val();
+        state.difficulty = $('#difficulty').val();
+        scrollToTop();
+        loadTasks(1); // Сброс на первую страницу
+    }
+
+    function updateURL() {
+        const params = new URLSearchParams();
+        if (state.page > 1) params.set('page', state.page);
+        if (state.category) params.set('category', state.category);
+        if (state.difficulty) params.set('difficulty', state.difficulty);
+
+        history.replaceState(null, '', params.toString() ? `?${params}` : location.pathname);
+    }
+
+    function initFromURL() {
+        const params = new URLSearchParams(location.search);
+        state.page = parseInt(params.get('page')) || 1;
+        state.category = params.get('category') || '';
+        state.difficulty = params.get('difficulty') || '';
+
+        $('#category').val(state.category);
+        $('#difficulty').val(state.difficulty);
+    }
 
     // Загрузка категорий
     function loadCategories() {
         $.ajax({
-            url: '/server/categories.php', // Предполагается, что у вас есть этот файл
+            url: '/server/categories.php',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                //console.log(data);
-                if (data.error) {
-                    alert(data.error);
-                    return;
-                }
-                data.categories.forEach(category => {
-                    $('#category').append(`<option value="${category.uuid}">${category.name}</option>`);
+                if (data.error) return showError(data.error);
+                data.categories.forEach(cat => {
+                    $('#category').append(`<option value="${cat.uuid}">${cat.name}</option>`);
                 });
             },
-            error: function() {
-                alert('Ошибка при загрузке категорий.');
-            }
+            error: () => showError('Ошибка загрузки категорий')
         });
     }
-
-    $('#filter').on('click', function() {
-        $(".loading-container").fadeIn();
-        $("#tasks").fadeOut();
-        selectedCategory = $('#category').val();
-        selectedDifficulty = $('#difficulty').val();
-        loadTasks(1); // Сброс страницы на 1 при применении фильтров
-    });
-
-    $('.select').on('change', function() {
-        $(".loading-container").fadeIn();
-        $("#tasks").fadeOut();
-        selectedCategory = $('#category').val();
-        selectedDifficulty = $('#difficulty').val();
-        loadTasks(1); // Сброс страницы на 1 при применении фильтров
-    });
-
-    // Загрузка категорий при загрузке страницы
-    $(document).ready(function() {
-        loadCategories();
-    });
 </script>
+    <script>
+        $(window).on('load', function(){
+            $(".apply-btn").click();
+        });
+    </script>
 
+</div>
 </body>
 </html>

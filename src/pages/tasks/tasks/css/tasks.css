@@ -1,208 +1,452 @@
-.finder,.pagination{
+/* Основные стили для раздела заданий */
+.tasks-section {
+    --tasks-gap: var(--spacing--large);
+    --card-padding: var(--spacing--xxlarge);
+    margin: 150px 0;
+    padding: 0 var(--spacing--large);
+}
+
+/* Стили фильтров с эффектом стекла */
+.filters-panel {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 50px;
-    row-gap: 10px;
-    max-width: 100vw;
     flex-wrap: wrap;
-    background-color: rgba(var(--background-color--secondary--alpha), 0.8);
-    padding: 25px;
-    margin: 0 auto;
-    margin-bottom: 10px;
-
-    backdrop-filter: blur(10px);
-
-    border-radius: calc(var(--border-radius-button)*3);
-}
-
-.pagination{
-    padding: min(25px, 5vw);
-    column-gap: 0px;
-    align-items: center;
-    align-content: center;
-}
-
-.pagination > button{
-    background-color: var(--color--secondary);
-    color: var(--text-color--light);
-    border-radius: var(--border-radius-button);
-    border: none;
-    padding: min(15px, 2.5vw);
-    min-width: min(5em, 3.5vw);
-    font-size: min(1em, 4vw);
-    margin: 3px;
-
-}
-
-.pagination > button.active{
-    background-color: var(--color--primary);
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 1; }
-}
-
-/* Обновляем стили для индикатора загрузки */
-.loading-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(var(--background-color--secondary--alpha), 0.9);
-    padding: 30px 50px;
-    border-radius: calc(var(--border-radius-button)*3);
-    backdrop-filter: blur(10px);
-    color: var(--text-color--primary);
-    text-align: center;
-    z-index: 1000;
-    display: none;
-    flex-direction: column;
+    gap: var(--tasks-gap);
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    gap: 8px;
+    background: linear-gradient(
+            145deg,
+            rgba(var(--background-color--secondary--alpha), 0.9) 0%,
+            rgba(var(--background-color--primary--alpha), 0.7) 100%
+    );
+    backdrop-filter: blur(20px);
+    padding: var(--card-padding);
+    border-radius: calc(var(--border-radius)*3);
+    box-shadow: var(--shadow-03);
+    margin-bottom: var(--spacing--xxlarge);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid rgba(var(--color--primary--alpha), 0.1);
+    padding: 10px 0;
 }
 
-
-.loader {
-    display: inline-flex;
-    gap: 8px;
+.filters-panel:hover {
+    /*transform: translateY(-5px);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    background: linear-gradient(
+            145deg,
+            rgba(var(--background-color--secondary--alpha), 0.95) 0%,
+            rgba(var(--background-color--primary--alpha), 0.8) 100%
+    );*/
 }
 
-.loader-circle {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: var(--color--secondary);
-    animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.loader-circle:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.loader-circle:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-.loader-circle:nth-child(3) {
-    animation-delay: 0s;
-}
-
-.loader-circle:nth-child(4) {
-    animation-delay: 0.16s;
-}
-
-@keyframes bounce {
-    0%, 80%, 100% {
-        transform: scale(0);
-    }
-    40% {
-        transform: scale(1);
-    }
-}
-
-.loading-text {
-    color: var(--text-color);
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-/* Анимация появления/исчезновения */
-.fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.3s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
-}
-
-
-
-/* Для плавных переходов между состояниями */
-#tasks, #pagination {
-    transition: opacity 0.3s ease;
-}
-
-.finder div select, .finder>button{
-    min-width: 150px;
-    background-color: var(--color--secondary);
-    color: var(--text-color--light);
-    border-radius: var(--border-radius-button);
-    border: none;
-    padding: 5px;
-}
-
-.finder>button{
-    margin: 0 auto;
-    max-width: 100%;
-    flex: 1 1 0px;
-}
-
-.finder div{
-    width: 270px;
-
-    flex: 1 1 0px;
+.filter-group {
+    position: relative;
     display: flex;
-    column-gap: 10px;
-    justify-content: space-between;
-    font-size: 1em;
-
+    align-items: center;
+    min-width: 280px;
+    gap: var(--spacing--medium);
 }
 
-.task a{
+.filter-icon, .difficulty-icon {
+    color: var(--color--primary);
+    font-size: 1.4rem;
+    text-shadow: 0 2px 8px rgba(var(--color--primary--alpha), 0.3);
+}
+
+/* Стилизованные селекты */
+.styled-select {
+    flex: 1;
+    padding: var(--spacing--medium) var(--spacing--large);
+    border: 1px solid rgba(var(--color--primary--alpha), 0.2);
+    border-radius: var(--border-radius);
+    background: rgba(var(--background-color--primary--alpha), 0.7);
     color: var(--text-color--primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing--medium) center;
+    background-size: 1.2rem;
+    box-shadow: var(--shadow-01);
+}
+
+.styled-select:focus {
+    outline: none;
+    border-color: var(--color--primary);
+    box-shadow: 0 0 0 3px rgba(var(--color--primary--alpha), 0.2);
+}
+
+/* Кнопка с анимированным градиентом */
+.apply-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing--small);
+    padding: var(--spacing--medium) var(--spacing--xxlarge);
+    background: linear-gradient(
+            135deg,
+            var(--color--primary) 0%,
+            var(--color--secondary) 100%
+    );
+    color: var(--text-color--light);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 10px 20px rgba(var(--color--primary--alpha), 0.3);
+    overflow: hidden;
+    height: 2em;
+    padding: 10px;
+}
+
+.apply-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.2),
+            transparent
+    );
+    transition: all 0.8s ease;
+}
+
+.apply-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(var(--color--primary--alpha), 0.4);
+}
+
+.apply-btn:hover::before {
+    left: 100%;
+}
+
+.apply-btn:active {
+    transform: translateY(0) scale(1);
+}
+
+/* Сетка заданий с анимацией появления */
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--tasks-gap);
+    margin-bottom: var(--spacing--xxlarge);
+    padding-top: 50px;
+}
+
+.task-card {
+    position: relative;
+    background: linear-gradient(
+            145deg,
+            rgba(var(--background-color--secondary--alpha), 0.9) 0%,
+            rgba(var(--background-color--primary--alpha), 0.7) 100%
+    );
+    border: 1px solid rgba(var(--color--primary--alpha), 0.1);
+    border-radius: calc(var(--border-radius)*2);
+    box-shadow: var(--shadow-02);
+    padding: var(--card-padding);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0;
+    display: none;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.task-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            135deg,
+            rgba(var(--color--primary--alpha), 0.05) 0%,
+            transparent 100%
+    );
+    z-index: -1;
+}
+
+.task-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-04);
+    background: linear-gradient(
+            145deg,
+            rgba(var(--background-color--secondary--alpha), 0.95) 0%,
+            rgba(var(--background-color--primary--alpha), 0.8) 100%
+    );
+}
+
+/* Заголовок задания с эффектом подчеркивания */
+.task-title {
+    font-size: 1.4rem;
+    margin-bottom: var(--spacing--medium);
+    color: var(--text-color--primary);
+    position: relative;
+}
+
+.task-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(
+            90deg,
+            var(--color--primary),
+            var(--color--accent)
+    );
+    border-radius: 3px;
+}
+
+/* Сложность с иконкой */
+.task-difficulty {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing--small);
+    margin-bottom: var(--spacing--medium);
+    font-weight: 500;
+}
+
+.difficulty-icon {
+    font-size: 1.1rem;
+}
+
+/* Описание задания */
+.task-description {
+    color: var(--text-color--secondary);
+    line-height: 1.6;
+    margin-bottom: var(--spacing--large);
+}
+
+/* Кнопка "Решить" */
+.solve-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing--small);
+    padding: var(--spacing--small) var(--spacing--large);
+    background: rgba(var(--color--primary--alpha), 0.1);
+    color: var(--color--primary);
+    border: 1px solid var(--color--primary);
+    border-radius: 50px;
+    font-weight: 500;
+    transition: all 0.3s ease;
     text-decoration: none;
 }
 
+.solve-btn:hover {
+    background: var(--color--primary);
+    color: var(--text-color--light);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--color--primary--alpha), 0.3);
+}
 
-.task {
-    padding: 10px;
-    margin: 10px 10px;
+/* Пагинация с эффектом стекла */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing--small);
+    padding: var(--spacing--large) 0;
 }
-.pagination {
-    margin-top: 20px;
-}
+
 .page-btn {
-    margin: 0 5px;
-    padding: 5px 10px;
+    padding: var(--spacing--small) var(--spacing--medium);
+    border: none;
+    background: rgba(var(--background-color--secondary--alpha), 0.7);
+    color: var(--text-color--primary);
+    border-radius: 50px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(var(--color--primary--alpha), 0.1);
+    box-shadow: var(--shadow-01);
 }
 
-@media (max-width: 792px) {
-    .finder>button{
-        margin: 0 auto;
-        min-width: 230px;
-    }
-
-    .finder{
-        margin: 0 5px;
-    }
+.page-btn:hover:not(.active) {
+    background: rgba(var(--background-color--tertiary--alpha), 0.8);
+    transform: translateY(-2px);
 }
 
-@keyframes blink {
-    0% {
-        opacity: 1;
-    }
+.page-btn.active {
+    background: linear-gradient(
+            135deg,
+            var(--color--primary) 0%,
+            var(--color--secondary) 100%
+    );
+    color: var(--text-color--light);
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(var(--color--primary--alpha), 0.3);
+}
 
+.prev-next {
+    padding: var(--spacing--small) calc(var(--spacing--medium));
+}
+
+/* Лоадер с эффектом частиц */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(var(--background-color--primary--alpha), 0.95);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.loader-content {
+    text-align: center;
+    position: relative;
+}
+
+.spinner {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing--large);
+    position: relative;
+}
+
+.double-bounce1, .double-bounce2 {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(
+            135deg,
+            var(--color--primary) 0%,
+            var(--color--secondary) 100%
+    );
+    opacity: 0.8;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: bounce 2.0s infinite ease-in-out;
+    box-shadow: 0 0 20px rgba(var(--color--primary--alpha), 0.3);
+}
+
+.double-bounce2 {
+    animation-delay: -1.0s;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(0.0);
+        opacity: 0.5;
+    }
     50% {
+        transform: scale(1.0);
+        opacity: 0.8;
+    }
+}
+
+.loading-message {
+    color: var(--text-color--primary);
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Сообщения */
+.error-message, .success-message {
+    width: 100%;
+    padding: var(--spacing--large);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    margin-bottom: var(--spacing--large);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-02);
+    border-left: 5px solid;
+    transition: all 0.3s ease;
+}
+
+.error-message {
+    background: rgba(var(--background--error--basic--alpha), 0.2);
+    border-left-color: var(--color--error--basic);
+    color: var(--text-color--primary);
+}
+
+.success-message {
+    background: rgba(var(--background--good--basic--alpha), 0.2);
+    border-left-color: var(--color--good--basic);
+    color: var(--text-color--primary);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
         opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .tasks-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .tasks-section {
+        margin: 120px 0;
+        padding: 0 var(--spacing--medium);
     }
 
-    100% {
-        opacity: 1;
+    .filters-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing--large);
+        padding: var(--spacing--large);
+    }
+
+    .filter-group {
+        min-width: 100%;
+    }
+
+    .apply-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tasks-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .task-card {
+        padding: var(--spacing--large);
+    }
+}
+
+@media (max-width: 480px) {
+    .tasks-section {
+        margin: 100px var(--spacing--small) 50px;
+        padding: 0;
+    }
+
+    .task-card {
+        padding: var(--spacing--medium);
     }
 }
