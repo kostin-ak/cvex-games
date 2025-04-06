@@ -18,6 +18,7 @@ $isSignedIn = AccountUtils::is_signed_in();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<div class="rating-particles" id="ratingParticles"></div>
 <div class="main">
     <div class="container">
         <h1>Рейтинг пользователей</h1>
@@ -216,6 +217,41 @@ $isSignedIn = AccountUtils::is_signed_in();
             const isMyGroup = window.location.search.includes('group=my');
             loadRating(isMyGroup ? 'my' : 'all');
         });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Создаем частицы для рейтинга
+        function createParticles() {
+            const particlesContainer = $('#ratingParticles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = $('<div>').addClass('rating-particle');
+
+                // Случайные параметры для частицы
+                const size = Math.random() * 5 + 1;
+                const posX = Math.random() * 100;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+
+                particle.css({
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    left: `${posX}%`,
+                    bottom: `-${size}px`,
+                    animationDuration: `${duration}s`,
+                    animationDelay: `${delay}s`,
+                    opacity: Math.random() * 0.5 + 0.1
+                });
+
+                particlesContainer.append(particle);
+            }
+        }
+
+        createParticles();
+
+        // Остальной JavaScript код остается без изменений
     });
 </script>
 </body>

@@ -402,3 +402,69 @@ body:not(.dark-theme) .rating-table tr:nth-child(3) .rank {
         font-size: 0.9rem;
     }
 }
+
+/* Добавьте этот код в rating.css */
+
+/* Particle effects for rating page */
+.main::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+            135deg,
+            rgba(var(--background-color--primary--alpha), 0.8) 0%,
+            rgba(var(--background-color--secondary--alpha), 0.5) 100%
+    );
+    z-index: -2;
+}
+
+.rating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.rating-particle {
+    position: absolute;
+    background: var(--color--primary);
+    border-radius: 50%;
+    opacity: 0.7;
+    filter: blur(0.5px);
+    animation: floatParticle linear infinite;
+    box-shadow: 0 0 5px rgba(var(--text-color--primary), 1);
+}
+
+/* Анимация для частиц рейтинга (можно настроить по-другому) */
+@keyframes floatParticle {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* Для контейнера рейтинга добавьте position: relative */
+.container {
+    position: relative;
+    /* остальные стили остаются без изменений */
+}
