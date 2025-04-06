@@ -131,7 +131,7 @@ class TasksTable extends BaseTable {
         return (int)$this->executeQuery($query, [':task_uuid' => $task_uuid])->fetchColumn();
     }
 
-    public function getFirstBlood(string $task_uuid): ?array {
+    public function getFirstBlood(string $task_uuid) {
         $query = "SELECT 
                     u.*,
                     r.date AS first_blood_date

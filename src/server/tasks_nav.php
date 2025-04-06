@@ -69,7 +69,7 @@ function generateHTML($tasks) {
             $difficultyClass = 'task-difficulty--easy';
         } elseif (strpos($difficultyLower, 'сложно') !== false) {
             $difficultyClass = 'task-difficulty--hard';
-        }elseif (strpos($difficultyLower, 'эксперт') !== false) {
+        } elseif (strpos($difficultyLower, 'эксперт') !== false) {
             $difficultyClass = 'task-difficulty--kill';
         }
 
@@ -85,11 +85,22 @@ function generateHTML($tasks) {
         // Разделитель
         $html .= '<span class="meta-divider mx-1">·</span>';
 
+
         // Сложность
         $html .= '<span class="meta-item task-difficulty ' . $difficultyClass . '">';
         $html .= '<i class="material-icons meta-icon">speed</i>';
         $html .= htmlspecialchars($difficultyText);
         $html .= '</span>';
+
+        // Добавляем тег "ограниченный по времени", если время ограничено
+        if ($task->getTimeLimit() != 0) {
+            $html .= '<span class="meta-item task-time-limit">';
+            $html .= '<i class="material-icons meta-icon">timer</i>';
+            $html .= 'Лимитированный';
+            $html .= '</span>';
+            $html .= '<span class="meta-divider mx-1">·</span>';
+        }
+
 
         $html .= '</div>'; // закрываем meta-group для тегов
         $html .= '</div>'; // закрываем task-meta

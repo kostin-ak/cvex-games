@@ -202,3 +202,45 @@
         opacity: 0;
     }
 }
+
+.task-time-limit {
+    /* Основные стили метки */
+    display: flex;
+    padding: 1px 10px;
+    border-radius: calc(var(--border-radius-button) * 3);
+    font-size: 0.85rem;
+    background-color: rgba(var(--color--primary--alpha), 0.2);
+    color: var(--text-color--primary);
+    margin: 0;
+
+    height: 2em;
+
+    /* Анимация пульсации для привлечения внимания */
+    animation: pulse 2s infinite;
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--color--primary--alpha), 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 5px rgba(var(--color--primary--alpha), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--color--primary--alpha), 0);
+    }
+}
+
+
+/* Адаптация для маленьких экранов */
+@media (max-width: 768px) {
+    .task-time-limit {
+        font-size: 0.75rem;
+        padding: 1px 8px;
+    }
+
+    .task-time-limit .meta-icon {
+        font-size: 1rem !important;
+    }
+}
