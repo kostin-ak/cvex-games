@@ -4,7 +4,7 @@
     include_once "../utils/db_utils.php";
     session_start();
 
-    sleep(2);
+    //sleep(2);
 
     try {
         $group = isset($_GET['group']) && $_GET['group'] === 'my' && isset($_SESSION['user']['group'])

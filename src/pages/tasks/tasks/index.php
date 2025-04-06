@@ -35,7 +35,15 @@
         <button id="filter">Применить фильтр</button>
     </div>
 
-    <div id="loading" style="display: none;">Загрузка <span>.</span><span>.</span><span>.</span>  </div>
+    <div class="loading-container">
+        <div class="loader">
+            <div class="loader-circle"></div>
+            <div class="loader-circle"></div>
+            <div class="loader-circle"></div>
+            <div class="loader-circle"></div>
+        </div>
+        <div class="loading-text">Загрузка рейтинга...</div>
+    </div>
 
     <div id="tasks" style="display: none;"></div>
 
@@ -48,12 +56,23 @@
     let selectedDifficulty = '';
     let totalPages = 0;
 
+    function showLoading() {
+        $('.loading-container').css('display', 'flex').hide().fadeIn(200);
+    }
+
+    function hideLoading() {
+        $('.loading-container').fadeOut(200);
+    }
+
     function loadTasks(page, selected_category, selected_difficulty) {
+        showLoading();
+        $("#tasks").fadeOut();
+
         if (selected_category == undefined) selected_category = selectedCategory;
         if (selected_difficulty == undefined) selected_difficulty = selectedDifficulty;
 
         // Показываем индикатор загрузки
-        $('#loading').fadeIn();
+        $('.loading-container').fadeIn();
 
         $.ajax({
             url: '/server/tasks_nav.php',
@@ -66,7 +85,7 @@
             dataType: 'json',
             success: function(data) {
                 // Скрываем индикатор загрузки
-                $('#loading').fadeOut();
+                hideLoading();
 
                 //console.log(data)
 
@@ -91,7 +110,7 @@
             },
             error: function() {
                 // Скрываем индикатор загрузки
-                $('#loading').fadeOut();
+                hideLoading();
 
                 alert('Ошибка при загрузке задач.');
             }
@@ -140,7 +159,7 @@
     }
 
     $(document).on('click', '.page-btn', function() {
-        $("#loading").fadeIn();
+        $(".loading-container").fadeIn();
         $("#tasks").fadeOut();
         window.scrollTo(0, 0);
         currentPage = $(this).data('page');
@@ -199,7 +218,7 @@
     }
 
     $('#filter').on('click', function() {
-        $("#loading").fadeIn();
+        $(".loading-container").fadeIn();
         $("#tasks").fadeOut();
         selectedCategory = $('#category').val();
         selectedDifficulty = $('#difficulty').val();
@@ -207,7 +226,7 @@
     });
 
     $('.select').on('change', function() {
-        $("#loading").fadeIn();
+        $(".loading-container").fadeIn();
         $("#tasks").fadeOut();
         selectedCategory = $('#category').val();
         selectedDifficulty = $('#difficulty').val();
