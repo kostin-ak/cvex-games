@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="/global/css/global.css">
     <link rel="stylesheet" href="/global/css/pages.css">
     <link rel="stylesheet" href="/pages/tasks/category/css/category.css">
-    <link rel="stylesheet" href="/pages/main/home.css">
     <link rel="stylesheet" href="/pages/account/css/login.css">
     <script src="/global/js/functions.js"></script>
     <script src="/global/blocks/menu/account.js"></script>

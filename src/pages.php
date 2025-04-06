@@ -17,7 +17,7 @@
         Page::standardPage("pages/tasks/tasks/index.php", ["/tasks"]),
         Page::standardPageRegexp("pages/tasks/tasks/index.php", ["/\/tasks\?/"]),
         Page::standardPageRegexp("pages/tasks/tasks/task.php", ["/\/task/"]),
-        Page::standardPage("pages/rating/index.php", ["/rating"]),
+        Page::standardPageRegexp("pages/rating/index.php", ["/\/rating/"]),
     );
 
     function get_pages(): array
