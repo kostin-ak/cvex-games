@@ -60,6 +60,63 @@ class UsersTable extends BaseTable {
         $result = $this->executeQuery($query, [':uuid' => $uuid])->fetch();
         return $result ? (int)$result['rank'] : 0;
     }
+    /**
+     * Получает рейтинг пользователей с фильтрацией по группе
+     *
+     * @param int|null $group Фильтр по группе (null - все группы)
+     * @param int $limit Ограничение количества результатов
+     * @param int $offset Смещение для пагинации
+     * @return array Массив с пользователями и их позицией в рейтинге
+     */
+    public function getRatingByGroup(?int $group = null, int $limit = 100, int $offset = 0): array {
+        $params = [];
+        $where = '';
+
+        if ($group !== null) {
+            $where = 'WHERE "group" = :group';
+            $params[':group'] = $group;
+        }
+
+        $query = "SELECT 
+                    u.*,
+                    dense_rank() OVER (ORDER BY u.score DESC) AS rank
+                  FROM users u
+                  {$where}
+                  ORDER BY rank ASC, u.username ASC
+                  LIMIT :limit OFFSET :offset";
+
+        $params[':limit'] = $limit;
+        $params[':offset'] = $offset;
+
+        $stmt = $this->connect->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue($key, $value, $paramType);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Получает общее количество пользователей в рейтинге с фильтрацией по группе
+     *
+     * @param int|null $group Фильтр по группе
+     * @return int Общее количество пользователей
+     */
+    public function getRatingCountByGroup(?int $group = null): int {
+        $params = [];
+        $where = '';
+
+        if ($group !== null) {
+            $where = 'WHERE "group" = :group';
+            $params[':group'] = $group;
+        }
+
+        $query = "SELECT COUNT(*) FROM users {$where}";
+        return (int)$this->executeQuery($query, $params)->fetchColumn();
+    }
 }
 
 class TasksTable extends BaseTable {

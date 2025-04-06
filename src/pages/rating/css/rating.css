@@ -1,0 +1,188 @@
+.container {
+    margin: 0 auto;
+    background: var(--background-color--secondary);
+    width: auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h1 {
+    color: var(--text-color--primary);
+    text-align: center;
+}
+.rating-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.rating-table th {
+    background-color: var(--background-color--tertiary);
+    color: var(--text-color--primary);
+    padding: 12px;
+    text-align: left;
+}
+.rating-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.rating-table td.username{
+    color: var(--text-color--primary);
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.rating-table tr:nth-child(even) {
+    background-color: rgba(var(--background-color--tertiary--alpha), 0.5);
+}
+.rating-table tr:hover {
+    background-color: rgba(var(--background-color--primary--alpha), 0.5);
+}
+.rank {
+    font-weight: bold;
+    color: var(--color--primary);
+    text-align: center;
+}
+.score {
+    text-align: right;
+}
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.clickable-row:hover {
+    background-color: #f5f5f5;
+}
+.group-selector {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+.group-selector button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--background-color--tertiary);
+    color: var(--text-color--primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.group-selector button.active {
+    background-color: var(--color--primary);
+    color: var(--text-color--light);
+}
+.loading-indicator {
+    display: none;
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+}
+.error-message {
+    color: var(--color--error--basic);
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+}
+
+
+.dynamic-content {
+    min-height: 150px; /* Чтобы избежать скачков при загрузке */
+    position: relative;
+}
+
+.loading-container {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.3s;
+}
+
+.loader {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.loader-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--color--secondary);
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loader-circle:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loader-circle:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.loader-circle:nth-child(3) {
+    animation-delay: 0s;
+}
+
+.loader-circle:nth-child(4) {
+    animation-delay: 0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+.loading-text {
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Анимация появления/исчезновения */
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+#rating-container {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#rating-container.visible {
+    opacity: 1;
+}
+
+.loading-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
