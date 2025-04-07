@@ -1,203 +1,291 @@
-.info_block{
+:root {
+    --avatar-size: min(25vh, 25vw);
+    --score-icon-size: 48px;
+    --accent-circle-size: 2em;
+    --transition-duration: 0.3s;
+}
+
+.info_block {
     display: flex;
     flex-direction: column;
-    width: calc(100% - 50px);
-    margin: 10px;
+    width: calc(100% - 50px) !important;
+    margin: 20px;
+    gap: 20px;
 }
-.block_score{
-    width: 100%;
+
+.block_score {
+    width: calc(100% - 35px);
     display: flex;
-    column-gap: 50px;
-    row-gap: 10px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
-.block_score_inner{
-    width: auto;
+.block_score_inner {
     flex: 1 1 0px;
     display: flex;
     justify-content: space-between;
-    align-content: center;
     align-items: center;
-    margin: 0 10px;
-
-    min-width: 320px;
-
-    font-size: 1.5em;
+    padding: 20px;
+    border-radius: var(--border-radius-card);
+    background: var(--background-color--secondary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+    min-width: 300px;
 }
 
-.block_score_inner div{
+.block_score_inner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.block_score_inner div {
     display: flex;
     align-items: center;
+    gap: 15px;
+}
+
+.block_score_inner p {
     margin: 0;
+    font-size: 1.2em;
+    font-weight: 500;
 }
 
-.block_score_inner p{
-    margin:  0;
-}
-
-.block_score_inner .accent{
+.block_score_inner .accent {
     color: var(--color--accent);
     background-color: var(--color--primary--active);
     text-align: center;
-    vertical-align: middle;
-    line-height: 2em;
-
-    min-width: 2em;
-    height: 2em;
-    border-radius: 100%;
+    line-height: var(--accent-circle-size);
+    width: var(--accent-circle-size);
+    height: var(--accent-circle-size);
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.block_score_inner img{
-    width: 48px;
-    height: 48px;
-    margin: 0;
-    margin-right: 10px;
-    border-radius: var(--border-radius-button);
+.block_score_inner img {
+    width: var(--score-icon-size);
+    height: var(--score-icon-size);
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color--primary--active);
+    padding: 8px;
 }
 
-.account-info-block{
+.account-info-block {
     display: flex;
     flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+    padding: 20px;
+    background: var(--background-color--secondary);
+    border-radius: var(--border-radius-card);
 }
 
-.account-info-block .imgholder{
-    width: min(25vh, 25vw);
+.account-info-block .imgholder {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    border-radius: 50%;
+    overflow: hidden;
+    /*border: 4px solid var(--color--primary--active);*/
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.account-info-block img{
+.account-info-block img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     filter: invert(0.32);
+    transition: filter var(--transition-duration) ease;
 }
 
-.dark-theme .account-info-block img{
+.dark-theme .account-info-block img {
     filter: invert(0.8);
 }
 
-.account-info{
+.account-info {
     flex: 1 1 0px;
-    font-size: 1.5em;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    row-gap: 10px;
-    margin-left: max(0.5em,10px);
+    gap: 8px;
 }
 
-.account-info p{
+.account-info p {
     margin: 0;
+    line-height: 1.4;
 }
 
-
-.account-info .type.root_class{
-    color: red;
+.account-info .type {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
-.account-info .type.user_class{
+.account-info .type.root_class {
+    color: #ff4d4d;
+    text-shadow: 0 0 5px rgba(255, 77, 77, 0.3);
+}
+
+.account-info .type.user_class {
     color: var(--color--accent);
 }
 
+.account-info .name {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--text-color--primary);
+}
 
-.tabs{
+.account-info .username {
+    font-size: 1.2em;
+    color: var(--text-color--secondary);
+}
+
+.account-info .registered {
+    font-size: 0.9em;
+    color: var(--text-color--tertiary);
+    font-style: italic;
+}
+
+.tabs {
     width: 100%;
-    padding: 10px;
+    padding: 0 20px 20px;
 }
 
-.tabs .tab_menu{
-    margin: 15px;
-    width: auto;
+.tabs .tab_menu {
+    margin: 10px 0 10px 3px;
+    width: calc(100% - 25px);
     display: flex;
-    justify-content: center;
-    column-gap: 10px;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    justify-content: space-between;
 }
 
-.tabs .tab_menu .tab{
+.tabs .tab_menu .tab {
     text-decoration: none;
     color: var(--text-color--primary);
     background-color: var(--background-color--secondary);
-    padding: 10px;
+    padding: 12px 20px;
     border-radius: var(--border-radius-button);
-    flex: 1;
-    align-content: center;
-    align-items: center;
+    flex: 1 0 auto;
     display: flex;
-    justify-content: space-between;
-    padding: 10px 15px;
-    transition-duration: 0.5s;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition-duration) ease;
+    white-space: nowrap;
 }
 
-.tabs .tab_menu .tab .material-icons{
-    font-size: 1.5em;
+.tabs .tab_menu .tab .material-icons {
+    font-size: 1.3em;
 }
 
-.tabs .tab_menu .tab.active{
+.tabs .tab_menu .tab.active {
     background-color: var(--color--primary--active);
     color: var(--text-color--light);
+    /*flex-grow: 1;*/
 }
 
-.tabs .tab_menu .tab:hover{
+.tabs .tab_menu .tab:hover {
     background-color: var(--color--tertiary--hover);
     color: #fff;
 }
-.tabs .tab_menu .tab.active:hover{
+
+.tabs .tab_menu .tab.active:hover {
     background-color: var(--color--primary--hover);
-    color: var(--text-color--light);
 }
 
-.tabs .tab-content .radar-chart{
+.tabs .tab-content .radar-chart {
     background-color: var(--background-color--secondary);
-    width: min(500px, 100%);
+    width: min(600px, 100%);
     border-radius: 10px;
-    padding: 15px;
+    padding: 20px;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
+.info_block, .tabs {
+    animation: fadeIn 0.5s ease-out forwards;
+}
 
-@media (max-width: 768px){
-    .block_score_inner{
-        font-size: 1.5em;
-        margin: 0px 0px;
+/* Адаптивность */
+@media (max-width: 768px) {
+    .info_block {
+        margin: 10px;
+        width: calc(100% - 20px);
     }
-    .tabs .tab_menu .tab .tab-desc{
+
+    .account-info-block {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 10px;
+    }
+
+    .account-info {
+        align-items: center;
+    }
+
+    .block_score {
+        gap: 10px;
+    }
+
+    .block_score_inner {
+        min-width: 100%;
+        padding: 15px;
+    }
+
+    .tabs .tab_menu .tab .tab-desc {
         display: none;
     }
-    .tabs .tab_menu .tab.active .tab-desc{
+
+    .tabs .tab_menu .tab.active .tab-desc {
         display: unset;
     }
 
-    .tabs .tab_menu .tab.active{
-        flex: 15;
+    .tab{
+        flex: 0 0 auto;
+        max-width: min-content;
     }
 
-    .tabs .tab_menu{
-        margin-left: 0;
-        column-gap: 2px;
+    .tab.active{
+        flex-grow: 1;
+        max-width: unset;
     }
 }
 
-@media (max-width: 450px){
-
-    .tabs .tab_menu .tab.active .tab-desc{
-        font-size: 0.85em;
+@media (max-width: 480px) {
+    :root {
+        --avatar-size: 120px;
+        --score-icon-size: 36px;
     }
 
-    .block_score_inner{
-        font-size: 0.8em;
-        margin: 0px 0px;
-        min-width: 150px;
+    .account-info .name {
+        font-size: 1.5em;
     }
-    .block_score_inner img{
-        scale: 0.8;
+
+    .account-info .username {
+        font-size: 1em;
     }
-    .block_score_inner .accent{
-        scale: 1.5;
+
+    .block_score_inner p {
+        font-size: 1em;
     }
-    .account-info{
-        font-size: small;
-        row-gap: 3px;
-        margin-bottom: 10px;
+
+    .tabs {
+        padding: 0 10px 10px;
     }
+
+    .tabs .tab_menu .tab {
+        padding: 10px 12px;
+    }
+
 
 }
-
