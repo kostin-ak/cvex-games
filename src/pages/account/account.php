@@ -48,15 +48,14 @@
             <div class="block_score">
                 <div class="card-primary block_score_inner">
                     <div>
-                        <img src="https://imgholder.ru/48x48/8493a8/adb9ca&text=IMAGE+HOLDER&font=kelson" alt="">
+                        <span class="material-icons score-icon">emoji_events</span>
                         <p>Заработано очков: </p>
                     </div>
                     <p class="accent"><?php echo AccountUtils::get_user()->getScore(); ?></p>
-
                 </div>
                 <div class="card-primary block_score_inner">
                     <div>
-                        <img src="https://imgholder.ru/48x48/8493a8/adb9ca&text=IMAGE+HOLDER&font=kelson" alt="">
+                        <span class="material-icons rank-icon">leaderboard</span>
                         <p>Рейтинг: </p>
                     </div>
                     <p class="accent"><?php echo DBUtils::getInstance()->users()->getRankByUUID($_SESSION['user_uuid']); ?></p>
