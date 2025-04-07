@@ -294,7 +294,7 @@
 </script>
     <script>
         $(window).on('load', function(){
-            $(".apply-btn").click();
+            loadTasks();
         });
     </script>
 

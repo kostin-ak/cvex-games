@@ -1,6 +1,6 @@
 /* Основные стили для раздела заданий */
 .tasks-section {
-    --tasks-gap: var(--spacing--large);
+    --tasks-gap: var(--spacing--medium);
     --card-padding: var(--spacing--xxlarge);
     margin: 150px 0;
     padding: 0 var(--spacing--large);
