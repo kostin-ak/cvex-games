@@ -149,10 +149,11 @@ class TasksTable extends BaseTable {
         ?string $category = null,
         ?int $difficulty = null,
         ?bool $user = false,
-        ?bool $admin = false
+        ?bool $admin = false,
+        ?string $user_uuid = null
     ): array {
         $offset = ($page - 1) * $limit;
-        $query = $this->buildQuery($user, $admin);
+        $query = $this->buildQuery($user, $admin, $user_uuid);
         $params = [];
         $where = strpos($query, 'WHERE') !== false ? 'AND' : 'WHERE';
 
@@ -180,8 +181,75 @@ class TasksTable extends BaseTable {
 
         $stmt->execute();
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        //var_dump($tasks);
+
         return $tasks ? array_map([Task::class, 'fromData'], $tasks) : [];
     }
+
+    private function buildQuery(bool $user, bool $admin, ?string $user_uuid = null): string {
+        $baseQuery = "SELECT t.*";
+
+        // Добавляем поля статусов если указан user_uuid
+        if ($user_uuid !== null) {
+            $baseQuery .= ", 
+                CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
+                CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
+        }
+
+        $joins = [];
+        $conditions = [];
+
+        if ($user) {
+            $user_uuid_session = $_SESSION['user_uuid'] ?? '';
+            if (!$admin && $user_uuid_session) {
+                $joins[] = "LEFT JOIN results r ON t.uuid = r.task AND r.user = '{$user_uuid_session}'";
+                $conditions[] = "r.uuid IS NULL";
+            }
+
+            $user_group = $_SESSION['user']['group'] ?? 0;
+            if ($user_group != 0) {
+                $conditions[] = "t.user_group LIKE '%{$user_group}%'";
+            }
+
+            if (!$admin) {
+                $conditions[] = "t.hidden = false";
+            }
+        } else {
+            $baseQuery .= ", r.popularity";
+            $joins = [
+                "JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task",
+                "JOIN categories c ON t.category = c.uuid"
+            ];
+            $conditions = [
+                "c.is_public = true",
+                "t.hidden = false"
+            ];
+        }
+
+        // Добавляем JOIN для проверки выполнения задания (state = 1)
+        if ($user_uuid !== null) {
+            $joins[] = "LEFT JOIN results r_completed ON t.uuid = r_completed.task AND r_completed.user = '{$user_uuid}' AND r_completed.state = 1";
+        }
+
+        // Добавляем JOIN для проверки заданий в работе (state = 2)
+        if ($user_uuid !== null) {
+            $joins[] = "LEFT JOIN results r_in_progress ON t.uuid = r_in_progress.task AND r_in_progress.user = '{$user_uuid}' AND r_in_progress.state = 2";
+        }
+
+        $query = $baseQuery . " FROM tasks t";
+
+        if (!empty($joins)) {
+            $query .= " " . implode(" ", $joins);
+        }
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        return $query;
+    }
+
 
     public function getTotalPages(
         int $limit,
@@ -231,50 +299,7 @@ class TasksTable extends BaseTable {
         }
     }
 
-    private function buildQuery(bool $user, bool $admin): string {
-        $baseQuery = "SELECT t.*";
-        $joins = [];
-        $conditions = [];
 
-        if ($user) {
-            $user_uuid = $_SESSION['user_uuid'] ?? '';
-            if (!$admin && $user_uuid) {
-                $joins[] = "LEFT JOIN results r ON t.uuid = r.task AND r.user = '{$user_uuid}'";
-                $conditions[] = "r.uuid IS NULL";
-            }
-
-            $user_group = $_SESSION['user']['group'] ?? 0;
-            if ($user_group != 0) {
-                $conditions[] = "t.user_group LIKE '%{$user_group}%'";
-            }
-
-            if (!$admin) {
-                $conditions[] = "t.hidden = false";
-            }
-        } else {
-            $baseQuery .= ", r.popularity";
-            $joins = [
-                "JOIN (SELECT task, COUNT(*) AS popularity FROM results GROUP BY task) r ON t.uuid = r.task",
-                "JOIN categories c ON t.category = c.uuid"
-            ];
-            $conditions = [
-                "c.is_public = true",
-                "t.hidden = false"
-            ];
-        }
-
-        $query = $baseQuery . " FROM tasks t";
-
-        if (!empty($joins)) {
-            $query .= " " . implode(" ", $joins);
-        }
-
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(" AND ", $conditions);
-        }
-
-        return $query;
-    }
 }
 
 class ResultsTable extends BaseTable {

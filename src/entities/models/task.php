@@ -23,7 +23,10 @@ class Task extends DBModel{
     private int $user_group;
     private int $time_limit;
 
-    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category, string $task_text, int $user_group, int $time_limit) {
+    private ?bool $completed;
+    private bool $inProgress = false;
+
+    public function __construct(string $uuid, string $name, string $description, string $attachment, string $creator, string $create, int $value, string $answer, string $end_time, bool $hidden, string $branch, int $difficulty, string $category, string $task_text, int $user_group, int $time_limit, ?bool $completed = null, ?bool $in_progress = null) {
         $this->uuid = $uuid;
         $this->name = $name;
         $this->description = $description;
@@ -40,6 +43,12 @@ class Task extends DBModel{
         $this->task_text = $task_text;
         $this->user_group = $user_group;
         $this->time_limit = $time_limit;
+        if ($completed){
+            $this->completed = $completed;
+        }
+        if ($in_progress){
+            $this->inProgress = $in_progress;
+        }
     }
 
 
@@ -109,13 +118,21 @@ class Task extends DBModel{
         return $this->time_limit;
     }
 
+    public function isCompleted(){
+        if (isset($this->completed)) return $this->completed;
+    }
+
+    public function isInProgress(){
+        if (isset($this->inProgress)) return $this->inProgress;
+    }
+
     public static function fromData(array $data): self {
 
         /*if (!isset($data['uuid']) or !isset($data['name']) or !isset($data['description']) or !isset($data['attachment']) or !isset($data['creator']) or !isset($data['create']) or !isset($data['value']) or !isset($data['answer']) or !isset($data['end_time']) or !isset($data['hidden']) or !isset($data['branch']) or !isset($data['difficulty']) or !isset($data['category'])) {
             return null;
         }*/
 
-        return new Task(
+        $args = array(
             $data['uuid'],
             $data['name'] ?? '',
             $data['description'] ?? '',
@@ -131,8 +148,17 @@ class Task extends DBModel{
             $data['category'],
             $data['task_text'] ?? "",
             $data['user_group'],
-            $data['time_limit'] ?? 0
+            $data['time_limit'] ?? 0,
         );
+
+        if (isset($data['completed'])){
+            array_push($args, $data['completed']);
+        }
+        if (isset($data['in_progress'])){
+            array_push($args, $data['in_progress']);
+        }
+
+        return new Task(...$args);
     }
 
 

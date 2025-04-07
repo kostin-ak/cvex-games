@@ -244,3 +244,68 @@
         font-size: 1rem !important;
     }
 }
+
+
+/* Completed task tag */
+.task-completed-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 100px;
+    background-color: rgba(var(--color--good--basic--alpha), 0.2);
+    color: var(--color--good--basic);
+    font-size: 0.8rem;
+    z-index: 1;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.task-completed-tag i {
+    font-size: 1.2rem !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Completed task tag */
+.task-progressed-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 100px;
+    color: var(--text-color--primary);
+    font-size: 0.8rem;
+    z-index: 1;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.taskp-progressed-tag i {
+    font-size: 0.5rem !important;
+}
+
+/* Анимация вращения для песочных часов */
+
+@keyframes hourglass-flip {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.task-progressed-tag i.material-icons.flip {
+    animation: hourglass-flip 3s ease-in-out infinite;
+}
+
+.task-progressed-tag i.material-icons {
+    font-size: 1.2rem !important;
+    margin-right: 5px;
+}

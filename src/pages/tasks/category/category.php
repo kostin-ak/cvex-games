@@ -87,7 +87,7 @@
                 echo '<div class="category-actions">
                             <a href="/tasks?category=' . $category_uuid . '" class="tasks-button" ' .
                     ($category['in_dev'] ? ' disabled' : '') . '>
-                                <i class="material-icons">task_alt</i> Перейти к заданиям
+                                Перейти к заданиям
                             </a>
                         </div>';
 

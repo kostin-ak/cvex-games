@@ -41,6 +41,20 @@ function generateHTML($tasks) {
         $html .= '<a href="/task?uuid=' . $task->getUuid() . '" class="text-decoration-none card-body-link">';
         $html .= '<div class="card-body">';
 
+        if ($task->isCompleted()) {
+            $html .= '<div class="task-completed-tag">';
+            $html .= '<i class="material-icons">check_circle</i>';
+            $html .= '<span>Выполнено</span>';
+            $html .= '</div>';
+        }
+
+        if ($task->isInProgress()) {
+            $html .= '<div class="task-progressed-tag">';
+            $html .= '<i class="material-icons smooth flip">hourglass_empty</i>';
+            $html .= '<span>В процессе</span>';
+            $html .= '</div>';
+        }
+
         // Заголовок
         $html .= '<h3 class="task-title">' . htmlspecialchars($task->getName()) . '</h3>';
 
@@ -96,7 +110,7 @@ function generateHTML($tasks) {
         if ($task->getTimeLimit() != 0) {
             $html .= '<span class="meta-item task-time-limit">';
             $html .= '<i class="material-icons meta-icon">timer</i>';
-            $html .= 'Лимитированный';
+            $html .= 'Ограничение';
             $html .= '</span>';
             $html .= '<span class="meta-divider mx-1">·</span>';
         }
@@ -119,8 +133,10 @@ try {
     $category = isset($_GET['category']) ? $_GET['category'] : null;
     $difficulty = isset($_GET['difficulty']) ? $_GET['difficulty'] : null;
 
+    $user_uuid = AccountUtils::is_signed_in() ? $_SESSION['user_uuid'] : null;
+
     $db = DBUtils::getInstance();
-    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin());
+    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $user_uuid);
 
     // Проверяем, что $tasks является массивом
     if (!is_array($tasks)) {
