@@ -163,10 +163,16 @@ $isSignedIn = AccountUtils::is_signed_in();
     `);
 
             users.forEach(user => {
+                const medalClass =
+                    user.rank == 1 ? 'gold' :
+                    user.rank == 2 ? 'silver' :
+                    user.rank == 3 ? 'bronze' : '';
+
+
                 const fullName = [user.name, user.sname].filter(Boolean).join(' ');
                 const $row = $(`
             <tr class="clickable-row" data-user="${escapeHtml(user.username)}">
-                <td class="rank">${escapeHtml(user.rank)}</td>
+                <td class="rank ${medalClass}">${escapeHtml(user.rank)}</td>
                 <td>#${escapeHtml(user.username)}</td>
                 <td>${escapeHtml(fullName)}</td>
                 <td class="score">${escapeHtml(user.score)}</td>
