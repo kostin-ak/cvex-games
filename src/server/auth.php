@@ -3,23 +3,30 @@
     include_once "../configs/config.php";
     include_once "../utils/db_utils.php";
 
+
+
     if (isset($_POST['login'])) {
+
+        header('Content-Type: application/json');
 
         $query = DBUtils::getInstance()->users()->getByLoginOrEmail($_POST['login']);
 
+        $response = [
+            'success' => false,
+        ];
+
         if ($query) {
             if (password_verify($_POST['password'], $query['password'])) {
-                echo true;
-
                 session_start();
                 $_SESSION['user_uuid'] = $query['uuid'];
                 $_SESSION['hash'] = password_hash($query['uuid'].$query['password'], PASSWORD_DEFAULT);
                 $_SESSION['user'] = $query;
 
-                return;
+                $response['success'] = true;
             }
         }
-        echo false;
+
+        echo json_encode($response);
     }
 
     if (isset($_POST['logout'])) {
