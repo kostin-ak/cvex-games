@@ -45,7 +45,7 @@
                 </li>
                 <li class="social-item">
                     <i class="material-icons">code</i>
-                    <a href="https://github.com/kostin-ak" target="_blank">GitHub</a>
+                    <a href="https://github.com/kostin-ak/quest_platform" target="_blank">GitHub</a>
                 </li>
                 <li class="social-item">
                     <i class="material-icons">forum</i>

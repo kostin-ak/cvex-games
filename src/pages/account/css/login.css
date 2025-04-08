@@ -173,3 +173,57 @@ input:required:valid {
 input:required:placeholder-shown {
     border-color: rgba(var(--background-color--secondary--alpha), 1);
 }
+
+
+/* Добавьте это в конец файла login.css */
+
+/* Стили для кастомных подсказок */
+.field-group {
+    position: relative;
+    margin-bottom: calc(var(--spacing--medium) + 5px);
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: rgba(var(--background--error--basic--alpha), 0.9);
+    color: var(--text-color--light);
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-time) ease;
+    z-index: 10;
+    max-width: 100%;
+    box-shadow: var(--shadow-02);
+    pointer-events: none;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 15px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(var(--background--error--basic--alpha), 0.9) transparent;
+}
+
+.tooltip.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Стили для невалидных полей */
+.field-input:invalid:not(:placeholder-shown) {
+    border-color: rgba(var(--background--error--basic--alpha), 0.7);
+}
+
+.field-input:valid:not(:placeholder-shown) {
+    border-color: rgba(var(--background--good--basic--alpha), 0.4);
+}

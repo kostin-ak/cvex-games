@@ -18,21 +18,22 @@
 
         <h1 class="login-header">Вход в систему</h1>
 
-        <form id="login-form">
+        <form id="login-form" novalidate>
             <div class="field-group">
                 <label for="username" class="field-label">Логин или email</label>
                 <input type="text" id="username" name="username" class="field-input"
                        placeholder="Введите ваш логин или email" autofocus
-                       pattern="[a-zA-Z0-9@._-]{3,}" title="Минимум 3 символа (буквы, цифры, @ . _ -)"
-                       oninput="toggleValidationStyles(this)"/>
+                       required minlength="3"/>
+                <div class="tooltip" id="username-tooltip">Минимум 3 символа (буквы, цифры, @ . _ -)</div>
             </div>
 
             <div class="field-group">
                 <label for="password" class="field-label">Пароль</label>
                 <input type="password" id="password" name="password"
                        class="field-input" placeholder="Введите ваш пароль" required
-                       minlength="4" title="Минимум 4 символа">
+                       minlength="4"/>
                 <span class="password-toggle material-icons" id="toggle-password">visibility</span>
+                <div class="tooltip" id="password-tooltip">Минимум 4 символа</div>
             </div>
 
             <input type="hidden" id="link" name="link" value="<?php echo htmlspecialchars($_GET['link'] ?? '/'); ?>">
