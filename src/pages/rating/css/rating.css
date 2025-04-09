@@ -471,3 +471,11 @@ body:not(.dark-theme) .rank.bronze {
     position: relative;
     /* остальные стили остаются без изменений */
 }
+
+table {
+    transform-style: preserve-3d;
+}
+
+thead {
+    transform: translate3d(0, 0, 1px);
+}
