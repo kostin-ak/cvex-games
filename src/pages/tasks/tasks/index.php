@@ -79,6 +79,8 @@
                 dataType: 'json'
             });
 
+            console.log(response)
+
             if (response.error) {
                 showError(response.error);
                 return;
