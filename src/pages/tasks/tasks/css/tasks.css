@@ -458,7 +458,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    /*min-width: 280px;*/
+    min-width: 280px;
     gap: var(--spacing--medium);
     flex: 1; /* Чтобы поиск растягивался */
 }
@@ -531,6 +531,10 @@
     .search-group {
         min-width: 100%;
     }
+
+    .search-input{
+        width: calc(100% - 100px) !important;
+    }
 }
 
 /* Анимация подчеркивания при фокусе */
@@ -556,4 +560,107 @@
 
 .search-input:focus ~ .search-input-wrapper::after {
     width: 100%;
+}
+
+.search-group {
+    position: relative;
+}
+.clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    display: none;
+    padding: 0 5px;
+}
+.clear-search:hover {
+    color: #555;
+}
+.search-input {
+    padding-right: 30px; /* Место для кнопки */
+}
+
+
+/* Улучшенные радио-кнопки с :has() */
+.status-radio {
+    display: flex;
+    gap: var(--spacing--medium);
+    padding: var(--spacing--small) 0;
+}
+
+.status-radio label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 28px;
+    color: var(--text-color--secondary);
+    transition: all 0.3s ease;
+}
+
+/* Скрываем нативный input */
+.status-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Внешний круг */
+.status-radio label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(var(--color--primary--alpha), 0.5);
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+/* Внутренний круг (скрыт по умолчанию) */
+.status-radio label::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color--primary); /* Основной цвет точки */
+    transition: transform 0.3s ease;
+}
+
+/* Состояние при выборе (через :has) */
+.status-radio label:has(input[type="radio"]:checked)::before {
+    border-color: var(--color--primary);
+}
+
+.status-radio label:has(input[type="radio"]:checked)::after {
+    transform: translateY(-50%) scale(1);
+    background: var(--color--accent); /* Изменяем цвет точки при выборе */
+}
+
+.status-radio label:has(input[type="radio"]:checked) {
+    color: var(--text-color--primary);
+    font-weight: 500;
+}
+
+/* Эффекты при наведении */
+.status-radio label:hover::before {
+    border-color: var(--color--primary);
+}
+
+/* Добавьте где-нибудь в файл tasks.css */
+.status-icon {
+    color: var(--color--primary);
+    font-size: 1.4rem;
+    text-shadow: 0 2px 8px rgba(var(--color--primary--alpha), 0.3);
 }

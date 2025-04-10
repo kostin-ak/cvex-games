@@ -135,17 +135,22 @@ try {
 
     $search = isset($_GET['search']) ? $_GET['search'] : null;
 
+    $completed = (isset($_GET['completed']) and $_GET['completed'] !== '') ? $_GET['completed'] : null;
+    $in_work = (isset($_GET['in_work']) and $_GET['in_work'] !== '') ? $_GET['in_work'] : null;
+
+    //var_dump($completed); var_dump($in_work);
+
     $user_uuid = AccountUtils::is_signed_in() ? $_SESSION['user_uuid'] : null;
 
     $db = DBUtils::getInstance();
-    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $user_uuid, $search);
+    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $user_uuid, $search, $completed, $in_work);
 
     // Проверяем, что $tasks является массивом
     if (!is_array($tasks)) {
         $tasks = []; // Если по какой-то причине это не массив, инициализируем его как пустой
     }
 
-    $totalPages = ceil($db->tasks()->getTotalPages($limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $search));
+    $totalPages = ceil($db->tasks()->getTotalPages($limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $search, $completed, $in_work));
     $html = generateHTML($tasks);
 
     echo json_encode(['html' => $html, 'totalPages' => $totalPages]);

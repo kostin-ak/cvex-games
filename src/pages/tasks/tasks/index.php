@@ -18,6 +18,9 @@
                 <div class="filter-group search-group">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="search" class="search-input" placeholder="Поиск по названию...">
+                    <button class="clear-search" id="clearSearch" title="Очистить поиск">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
 
                 <div class="filter-group">
@@ -37,6 +40,21 @@
                         <option value="3">Сложно</option>
                         <option value="4">Эксперт</option>
                     </select>
+                </div>
+
+                <div class="filter-group status-group">
+                    <i class="fas fa-tasks status-icon"></i>
+                    <div class="status-radio">
+                        <label>
+                            <input type="radio" name="status" value="all" checked> Все
+                        </label>
+                        <label>
+                            <input type="radio" name="status" value="completed"> Выполнено
+                        </label>
+                        <label>
+                            <input type="radio" name="status" value="in_work"> В работе
+                        </label>
+                    </div>
                 </div>
 
                 <button id="filter" class="apply-btn">
@@ -69,6 +87,7 @@
             category: '',
             difficulty: '',
             search: '',
+            status: 'all',
             totalPages: 0
         };
 
@@ -76,26 +95,52 @@
         let searchTimer = null;
 
         // Инициализация загрузчика задач
-        async function loadTasks(page = state.page, category = state.category, difficulty = state.difficulty, search = state.search) {
+        async function loadTasks(page = state.page, category = state.category, difficulty = state.difficulty, search = state.search, status = state.status) {
             showLoading();
             $('#tasks-container').fadeOut(200);
+
+            // Определяем параметры completed и in_work в зависимости от выбранного статуса
+            let completed = null;
+            let in_work = null;
+
+            switch(status) {
+                case 'completed':
+                    completed = true;
+                    in_work = null;
+                    break;
+                case 'in_work':
+                    completed = null;
+                    in_work = true;
+                    break;
+                case 'all':
+                default:
+                    completed = null;
+                    in_work = null;
+            }
 
             try {
                 const response = await $.ajax({
                     url: '/server/tasks_nav.php',
                     type: 'GET',
-                    data: { page, category, difficulty, search },
+                    data: {
+                        page,
+                        category,
+                        difficulty,
+                        search,
+                        completed,
+                        in_work
+                    },
                     dataType: 'json'
                 });
 
-                console.log(response)
+                console.log(response);
 
                 if (response.error) {
                     showError(response.error);
                     return;
                 }
 
-                updateState(response, page, category, difficulty, search);
+                updateState(response, page, category, difficulty, search, status);
                 renderTasks(response);
                 updatePagination(response.totalPages);
                 updateURL();
@@ -109,11 +154,12 @@
         }
 
         // Обновление состояния
-        function updateState(data, page, category, difficulty, search) {
+        function updateState(data, page, category, difficulty, search, status) {
             state.page = page;
             state.category = category;
             state.difficulty = difficulty;
             state.search = search;
+            state.status = status;
             state.totalPages = data.totalPages || 0;
         }
 
@@ -250,13 +296,52 @@
                 if (e.which === 13) {
                     applyFilters();
                 }
+            })
+            .on('change', 'input[name="status"]', function() {
+                state.status = $(this).val();
+                applyFilters();
             });
 
         // Инициализация страницы
         $(document).ready(function() {
             initFromURL();
             loadCategories();
+
+            // Обработчик ввода в поле поиска для показа/скрытия кнопки очистки
+            $('#search').on('input', function() {
+                state.search = $(this).val().trim();
+                toggleClearButton();
+            });
+
+            // Обработчик клика по кнопке очистки
+            $('#clearSearch').on('click', function() {
+                $('#search').val('').trigger('input');
+                applyFilters();
+            });
         });
+
+        // Функция для показа/скрытия кнопки очистки
+        function toggleClearButton() {
+            const hasText = $('#search').val().trim().length > 0;
+            $('#clearSearch').toggle(hasText);
+        }
+
+        // Добавление в функцию initFromURL вызов toggleClearButton
+        function initFromURL() {
+            const params = new URLSearchParams(location.search);
+            state.page = parseInt(params.get('page')) || 1;
+            state.category = params.get('category') || '';
+            state.difficulty = params.get('difficulty') || '';
+            state.search = params.get('search') || '';
+            state.status = params.get('status') || 'all';
+
+            $('#category').val(state.category);
+            $('#difficulty').val(state.difficulty);
+            $('#search').val(state.search);
+            $(`input[name="status"][value="${state.status}"]`).prop('checked', true);
+
+            toggleClearButton(); // Добавлено для правильного отображения кнопки при загрузке
+        }
 
         // Вспомогательные функции
         function scrollToTop() {
@@ -279,6 +364,7 @@
         function applyFilters() {
             state.category = $('#category').val();
             state.difficulty = $('#difficulty').val();
+            state.status = $('input[name="status"]:checked').val();
             scrollToTop();
             loadTasks(1); // Сброс на первую страницу
         }
@@ -289,6 +375,7 @@
             if (state.category) params.set('category', state.category);
             if (state.difficulty) params.set('difficulty', state.difficulty);
             if (state.search) params.set('search', state.search);
+            if (state.status !== 'all') params.set('status', state.status);
 
             history.replaceState(null, '', params.toString() ? `?${params}` : location.pathname);
         }
@@ -299,10 +386,12 @@
             state.category = params.get('category') || '';
             state.difficulty = params.get('difficulty') || '';
             state.search = params.get('search') || '';
+            state.status = params.get('status') || 'all';
 
             $('#category').val(state.category);
             $('#difficulty').val(state.difficulty);
             $('#search').val(state.search);
+            $(`input[name="status"][value="${state.status}"]`).prop('checked', true);
         }
 
         // Загрузка категорий

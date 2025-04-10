@@ -176,7 +176,9 @@ class TasksTable extends BaseTable
         ?bool $user = false,
         ?bool $admin = false,
         ?string $user_uuid = null,
-        ?string $search = null
+        ?string $search = null,
+        ?bool $completed = null,  // Фильтр по выполненным заданиям
+        ?bool $in_progress = null  // Новый параметр для фильтрации по заданиям "в работе"
     ): array
     {
         $offset = ($page - 1) * $limit;
@@ -196,10 +198,33 @@ class TasksTable extends BaseTable
             $where = 'AND';
         }
 
-        // Изменено здесь: используем AND и правильную группировку условий поиска
         if ($search) {
             $query .= " {$where} (t.name ILIKE :search OR t.description ILIKE :search)";
             $params[':search'] = '%' . $search . '%';
+            $where = 'AND';
+        }
+
+        // Условие для фильтрации по выполненным заданиям
+        if ($completed !== null && $user_uuid !== null) {
+            $query .= " {$where} EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :completed_user_uuid 
+            AND r.state = 1
+        )";
+            $params[':completed_user_uuid'] = $user_uuid;
+            $where = 'AND';
+        }
+
+        // Условие для фильтрации по заданиям "в работе"
+        if ($in_progress !== null && $user_uuid !== null) {
+            $query .= " {$where} EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :in_progress_user_uuid 
+            AND r.state = 2
+        )";
+            $params[':in_progress_user_uuid'] = $user_uuid;
         }
 
         $query .= $user ? " ORDER BY t.create DESC" : " ORDER BY r.popularity DESC";
@@ -219,14 +244,84 @@ class TasksTable extends BaseTable
         return $tasks ? array_map([Task::class, 'fromData'], $tasks) : [];
     }
 
+    public function getTotalPages(
+        int $limit,
+        ?string $category = null,
+        ?int $difficulty = null,
+        bool $user = false,
+        bool $admin = false,
+        ?string $search = null,
+        ?bool $completed = null,
+        ?bool $in_progress = null,  // Новый параметр для фильтрации по заданиям "в работе"
+        ?string $user_uuid = null
+    ): int
+    {
+        $query = $this->buildQuery($user, $admin, $user_uuid);
+        $query = preg_replace('/SELECT .*? FROM/', 'SELECT COUNT(*) FROM', $query);
+
+        $params = [];
+        $whereExists = strpos($query, 'WHERE') !== false;
+
+        $additionalConditions = [];
+        if ($category) {
+            $additionalConditions[] = "t.category = :category";
+            $params[':category'] = $category;
+        }
+        if ($difficulty) {
+            $additionalConditions[] = "t.difficulty = :difficulty";
+            $params[':difficulty'] = $difficulty;
+        }
+        if ($search) {
+            $additionalConditions[] = "(t.name ILIKE :search OR t.description ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+        if ($completed !== null && $user_uuid !== null) {
+            $additionalConditions[] = "EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :completed_user_uuid 
+            AND r.state = 1
+        )";
+            $params[':completed_user_uuid'] = $user_uuid;
+        }
+        if ($in_progress !== null && $user_uuid !== null) {
+            $additionalConditions[] = "EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :in_progress_user_uuid 
+            AND r.state = 2
+        )";
+            $params[':in_progress_user_uuid'] = $user_uuid;
+        }
+
+        if (!empty($additionalConditions)) {
+            $query .= $whereExists ? " AND " : " WHERE ";
+            $query .= implode(" AND ", $additionalConditions);
+        }
+
+        try {
+            $stmt = $this->connect->prepare($query);
+            foreach ($params as $key => $value) {
+                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $stmt->bindValue($key, $value, $paramType);
+            }
+            $stmt->execute();
+            $totalCount = (int)$stmt->fetchColumn();
+            return (int)ceil($totalCount / $limit);
+        } catch (PDOException $e) {
+            error_log("SQL Error: " . $e->getMessage());
+            error_log("Query: " . $query);
+            return 0;
+        }
+    }
     private function buildQuery(bool $user, bool $admin, ?string $user_uuid = null): string
     {
         $baseQuery = "SELECT t.*";
 
         if ($user_uuid !== null) {
             $baseQuery .= ", 
-                CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
-                CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
+            CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
+            CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
         }
 
         $joins = [];
@@ -274,56 +369,6 @@ class TasksTable extends BaseTable
         }
 
         return $query;
-    }
-
-    public function getTotalPages(
-        int $limit,
-        ?string $category = null,
-        ?int $difficulty = null,
-        bool $user = false,
-        bool $admin = false,
-        ?string $search = null
-    ): int
-    {
-        $query = $this->buildQuery($user, $admin);
-        $query = preg_replace('/SELECT .*? FROM/', 'SELECT COUNT(*) FROM', $query);
-
-        $params = [];
-        $whereExists = strpos($query, 'WHERE') !== false;
-
-        $additionalConditions = [];
-        if ($category) {
-            $additionalConditions[] = "t.category = :category";
-            $params[':category'] = $category;
-        }
-        if ($difficulty) {
-            $additionalConditions[] = "t.difficulty = :difficulty";
-            $params[':difficulty'] = $difficulty;
-        }
-        if ($search) {
-            $additionalConditions[] = "(t.name ILIKE :search OR t.description ILIKE :search)";
-            $params[':search'] = '%' . $search . '%';
-        }
-
-        if (!empty($additionalConditions)) {
-            $query .= $whereExists ? " AND " : " WHERE ";
-            $query .= implode(" AND ", $additionalConditions);
-        }
-
-        try {
-            $stmt = $this->connect->prepare($query);
-            foreach ($params as $key => $value) {
-                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $stmt->bindValue($key, $value, $paramType);
-            }
-            $stmt->execute();
-            $totalCount = (int)$stmt->fetchColumn();
-            return (int)ceil($totalCount / $limit);
-        } catch (PDOException $e) {
-            error_log("SQL Error: " . $e->getMessage());
-            error_log("Query: " . $query);
-            return 0;
-        }
     }
 }
 
