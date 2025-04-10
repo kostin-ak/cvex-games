@@ -31,12 +31,17 @@
 }
 
 /* Filter groups */
-.filter-group, .search-group {
+.filter-group, .search-group, status-group {
     position: relative;
     display: flex;
     align-items: center;
     min-width: 280px;
     gap: var(--spacing--medium);
+}
+
+.status-group{
+    display: flex;
+    flex-direction: row;
 }
 
 /* Icons */
@@ -119,7 +124,7 @@
 /* Radio buttons */
 .status-radio {
     display: flex;
-    gap: var(--spacing--medium);
+    gap: var(--spacing--small);
     padding: var(--spacing--small) 0;
 }
 
@@ -527,8 +532,10 @@
     }
 
     .filter-group,
+    .status-group,
     .search-group {
-        min-width: 100%;
+        max-width: unset;
+        width: calc(100% - 10px);
     }
 
     .apply-btn {
@@ -560,6 +567,17 @@
     .tasks-section {
         margin: 100px var(--spacing--small) 50px;
         padding: 0;
+    }
+
+    .status-radio{
+        font-size: 0.8em;
+    }
+
+    .filter-icon,
+    .difficulty-icon,
+    .status-icon,
+    .search-icon{
+        scale: 0.8;
     }
 
     .task-card {

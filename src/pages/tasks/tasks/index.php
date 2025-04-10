@@ -1,3 +1,8 @@
+<?php
+    include_once 'utils/account_utils.php';
+    $user = AccountUtils::is_signed_in();
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -41,7 +46,7 @@
                         <option value="4">Эксперт</option>
                     </select>
                 </div>
-
+                <?php if ($user):?>
                 <div class="filter-group status-group">
                     <i class="fas fa-tasks status-icon"></i>
                     <div class="status-radio">
@@ -56,6 +61,7 @@
                         </label>
                     </div>
                 </div>
+                <?php endif;?>
 
                 <button id="filter" class="apply-btn">
                     <i class="fas fa-sliders-h"></i> Применить
