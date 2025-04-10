@@ -135,6 +135,121 @@ class UsersTable extends BaseTable
         $query = "SELECT COUNT(*) FROM users {$where}";
         return (int)$this->executeQuery($query, $params)->fetchColumn();
     }
+
+    public function usernameExists(string $username): bool
+    {
+        $query = "SELECT COUNT(*) FROM users WHERE username = :username";
+        $count = $this->executeQuery($query, [':username' => $username])->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function emailExists(string $email): bool
+    {
+        $query = "SELECT COUNT(*) FROM users WHERE mail = :email";
+        $count = $this->executeQuery($query, [':email' => $email])->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function exists(string $value, string $type = 'both'): bool
+    {
+        $conditions = [];
+        $params = [];
+
+        if ($type === 'both' || $type === 'username') {
+            $conditions[] = "username = :username";
+            $params[':username'] = $value;
+        }
+
+        if ($type === 'both' || $type === 'email') {
+            $conditions[] = "mail = :email";
+            $params[':email'] = $value;
+        }
+
+        $where = implode(' OR ', $conditions);
+        $query = "SELECT COUNT(*) FROM users WHERE {$where}";
+
+        $count = $this->executeQuery($query, $params)->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function createUser(array $userData): bool
+    {
+        if (empty($userData['username']) || empty($userData['mail'])) {
+            throw new InvalidArgumentException("Required user fields are missing");
+        }
+
+        // Проверка уникальности username и email
+        if ($this->usernameExists($userData['username'])) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if ($this->emailExists($userData['mail'])) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        $query = "INSERT INTO users (
+            username, 
+            mail, 
+            name, 
+            sname,
+            password, 
+            role,
+            score, 
+            \"group\", 
+            registered
+          ) VALUES ( 
+            :username, 
+            :mail, 
+            :name, 
+            :sname,
+            :password, 
+            :role,
+            :score, 
+            :group, 
+            :registered
+          )";
+
+        $defaults = [
+            ':score' => 0,
+            ':role' => 0,
+            ':registered' => date('Y-m-d H:i:s'),
+        ];
+
+        // Объединяем переданные данные с значениями по умолчанию
+        $params = array_merge($defaults, [
+            ':username' => $userData['username'],
+            ':name' => $userData['name'] ?? null,
+            ':sname' => $userData['sname'] ?? null,
+            ':mail' => $userData['mail'],
+            ':group' => $userData['group'] ?? 0,
+            ':password' => $userData['password'] ?? null
+        ]);
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            // Привязываем параметры с правильными типами
+            foreach ($params as $key => $value) {
+                if (is_bool($value)) {
+                    $paramType = PDO::PARAM_BOOL;
+                } elseif (is_int($value)) {
+                    $paramType = PDO::PARAM_INT;
+                } elseif (is_null($value)) {
+                    $paramType = PDO::PARAM_NULL;
+                } else {
+                    $paramType = PDO::PARAM_STR;
+                }
+                $stmt->bindValue($key, $value, $paramType);
+            }
+
+            return $stmt->execute();
+
+        } catch (PDOException $e) {
+            error_log("Error creating user: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
 }
 
 /**
