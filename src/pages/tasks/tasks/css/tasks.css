@@ -450,3 +450,110 @@
         padding: var(--spacing--medium);
     }
 }
+
+/* Дополнения для стилей поиска */
+
+/* Группа поиска */
+.search-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*min-width: 280px;*/
+    gap: var(--spacing--medium);
+    flex: 1; /* Чтобы поиск растягивался */
+}
+
+.search-icon {
+    color: var(--color--primary);
+    font-size: 1.4rem;
+    text-shadow: 0 2px 8px rgba(var(--color--primary--alpha), 0.3);
+    flex-shrink: 0;
+}
+
+/* Поле ввода поиска */
+.search-input {
+    flex: 1;
+    padding: var(--spacing--medium) var(--spacing--large);
+    padding-left: calc(var(--spacing--large) + 2rem); /* Отступ для иконки */
+    border: 1px solid rgba(var(--color--primary--alpha), 0.2);
+    border-radius: 50px;
+    background: rgba(var(--background-color--primary--alpha), 0.7);
+    color: var(--text-color--primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-01);
+    backdrop-filter: blur(5px);
+    position: relative;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color--primary);
+    box-shadow: 0 0 0 3px rgba(var(--color--primary--alpha), 0.2);
+}
+
+.search-input::placeholder {
+    color: rgba(var(--text-color--secondary--alpha), 0.7);
+}
+
+/* Анимация при фокусе */
+.search-group:focus-within .search-icon {
+    transform: scale(1.1);
+    color: var(--color--accent);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Микро-анимация при вводе */
+.search-input:not(:placeholder-shown) {
+    padding-left: calc(var(--spacing--large) + 2.5rem);
+}
+
+/* Эффект "умного" поиска */
+@media (min-width: 1025px) {
+
+    .search-group {
+        max-width: 400px;
+    }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .search-input {
+        padding: var(--spacing--small) var(--spacing--medium);
+        padding-left: calc(var(--spacing--medium) + 1.8rem);
+        font-size: 0.9rem;
+    }
+
+    .search-icon {
+        font-size: 1.2rem;
+    }
+
+    .search-group {
+        min-width: 100%;
+    }
+}
+
+/* Анимация подчеркивания при фокусе */
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-input-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            var(--color--primary),
+            var(--color--accent)
+    );
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.search-input:focus ~ .search-input-wrapper::after {
+    width: 100%;
+}

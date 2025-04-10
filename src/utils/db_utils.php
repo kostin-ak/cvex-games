@@ -175,7 +175,8 @@ class TasksTable extends BaseTable
         ?int $difficulty = null,
         ?bool $user = false,
         ?bool $admin = false,
-        ?string $user_uuid = null
+        ?string $user_uuid = null,
+        ?string $search = null
     ): array
     {
         $offset = ($page - 1) * $limit;
@@ -192,6 +193,13 @@ class TasksTable extends BaseTable
         if ($difficulty) {
             $query .= " {$where} t.difficulty = :difficulty";
             $params[':difficulty'] = $difficulty;
+            $where = 'AND';
+        }
+
+        // Изменено здесь: используем AND и правильную группировку условий поиска
+        if ($search) {
+            $query .= " {$where} (t.name ILIKE :search OR t.description ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
         }
 
         $query .= $user ? " ORDER BY t.create DESC" : " ORDER BY r.popularity DESC";
@@ -209,7 +217,6 @@ class TasksTable extends BaseTable
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $tasks ? array_map([Task::class, 'fromData'], $tasks) : [];
-
     }
 
     private function buildQuery(bool $user, bool $admin, ?string $user_uuid = null): string
@@ -274,7 +281,8 @@ class TasksTable extends BaseTable
         ?string $category = null,
         ?int $difficulty = null,
         bool $user = false,
-        bool $admin = false
+        bool $admin = false,
+        ?string $search = null
     ): int
     {
         $query = $this->buildQuery($user, $admin);
@@ -291,6 +299,10 @@ class TasksTable extends BaseTable
         if ($difficulty) {
             $additionalConditions[] = "t.difficulty = :difficulty";
             $params[':difficulty'] = $difficulty;
+        }
+        if ($search) {
+            $additionalConditions[] = "(t.name ILIKE :search OR t.description ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
         }
 
         if (!empty($additionalConditions)) {

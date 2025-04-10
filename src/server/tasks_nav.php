@@ -133,17 +133,19 @@ try {
     $category = isset($_GET['category']) ? $_GET['category'] : null;
     $difficulty = isset($_GET['difficulty']) ? $_GET['difficulty'] : null;
 
+    $search = isset($_GET['search']) ? $_GET['search'] : null;
+
     $user_uuid = AccountUtils::is_signed_in() ? $_SESSION['user_uuid'] : null;
 
     $db = DBUtils::getInstance();
-    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $user_uuid);
+    $tasks = $db->tasks()->getList($page, $limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $user_uuid, $search);
 
     // Проверяем, что $tasks является массивом
     if (!is_array($tasks)) {
         $tasks = []; // Если по какой-то причине это не массив, инициализируем его как пустой
     }
 
-    $totalPages = ceil($db->tasks()->getTotalPages($limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin()));
+    $totalPages = ceil($db->tasks()->getTotalPages($limit, $category, (int) $difficulty, AccountUtils::is_signed_in(), AccountUtils::is_admin(), $search));
     $html = generateHTML($tasks);
 
     echo json_encode(['html' => $html, 'totalPages' => $totalPages]);
