@@ -135,6 +135,121 @@ class UsersTable extends BaseTable
         $query = "SELECT COUNT(*) FROM users {$where}";
         return (int)$this->executeQuery($query, $params)->fetchColumn();
     }
+
+    public function usernameExists(string $username): bool
+    {
+        $query = "SELECT COUNT(*) FROM users WHERE username = :username";
+        $count = $this->executeQuery($query, [':username' => $username])->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function emailExists(string $email): bool
+    {
+        $query = "SELECT COUNT(*) FROM users WHERE mail = :email";
+        $count = $this->executeQuery($query, [':email' => $email])->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function exists(string $value, string $type = 'both'): bool
+    {
+        $conditions = [];
+        $params = [];
+
+        if ($type === 'both' || $type === 'username') {
+            $conditions[] = "username = :username";
+            $params[':username'] = $value;
+        }
+
+        if ($type === 'both' || $type === 'email') {
+            $conditions[] = "mail = :email";
+            $params[':email'] = $value;
+        }
+
+        $where = implode(' OR ', $conditions);
+        $query = "SELECT COUNT(*) FROM users WHERE {$where}";
+
+        $count = $this->executeQuery($query, $params)->fetchColumn();
+        return (bool)$count;
+    }
+
+    public function createUser(array $userData): bool
+    {
+        if (empty($userData['username']) || empty($userData['mail'])) {
+            throw new InvalidArgumentException("Required user fields are missing");
+        }
+
+        // Проверка уникальности username и email
+        if ($this->usernameExists($userData['username'])) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if ($this->emailExists($userData['mail'])) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        $query = "INSERT INTO users (
+            username, 
+            mail, 
+            name, 
+            sname,
+            password, 
+            role,
+            score, 
+            \"group\", 
+            registered
+          ) VALUES ( 
+            :username, 
+            :mail, 
+            :name, 
+            :sname,
+            :password, 
+            :role,
+            :score, 
+            :group, 
+            :registered
+          )";
+
+        $defaults = [
+            ':score' => 0,
+            ':role' => 0,
+            ':registered' => date('Y-m-d H:i:s'),
+        ];
+
+        // Объединяем переданные данные с значениями по умолчанию
+        $params = array_merge($defaults, [
+            ':username' => $userData['username'],
+            ':name' => $userData['name'] ?? null,
+            ':sname' => $userData['sname'] ?? null,
+            ':mail' => $userData['mail'],
+            ':group' => $userData['group'] ?? 0,
+            ':password' => $userData['password'] ?? null
+        ]);
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            // Привязываем параметры с правильными типами
+            foreach ($params as $key => $value) {
+                if (is_bool($value)) {
+                    $paramType = PDO::PARAM_BOOL;
+                } elseif (is_int($value)) {
+                    $paramType = PDO::PARAM_INT;
+                } elseif (is_null($value)) {
+                    $paramType = PDO::PARAM_NULL;
+                } else {
+                    $paramType = PDO::PARAM_STR;
+                }
+                $stmt->bindValue($key, $value, $paramType);
+            }
+
+            return $stmt->execute();
+
+        } catch (PDOException $e) {
+            error_log("Error creating user: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
 }
 
 /**
@@ -175,7 +290,10 @@ class TasksTable extends BaseTable
         ?int $difficulty = null,
         ?bool $user = false,
         ?bool $admin = false,
-        ?string $user_uuid = null
+        ?string $user_uuid = null,
+        ?string $search = null,
+        ?bool $completed = null,  // Фильтр по выполненным заданиям
+        ?bool $in_progress = null  // Новый параметр для фильтрации по заданиям "в работе"
     ): array
     {
         $offset = ($page - 1) * $limit;
@@ -192,6 +310,36 @@ class TasksTable extends BaseTable
         if ($difficulty) {
             $query .= " {$where} t.difficulty = :difficulty";
             $params[':difficulty'] = $difficulty;
+            $where = 'AND';
+        }
+
+        if ($search) {
+            $query .= " {$where} (t.name ILIKE :search OR t.description ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+            $where = 'AND';
+        }
+
+        // Условие для фильтрации по выполненным заданиям
+        if ($completed !== null && $user_uuid !== null) {
+            $query .= " {$where} EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :completed_user_uuid 
+            AND r.state = 1
+        )";
+            $params[':completed_user_uuid'] = $user_uuid;
+            $where = 'AND';
+        }
+
+        // Условие для фильтрации по заданиям "в работе"
+        if ($in_progress !== null && $user_uuid !== null) {
+            $query .= " {$where} EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :in_progress_user_uuid 
+            AND r.state = 2
+        )";
+            $params[':in_progress_user_uuid'] = $user_uuid;
         }
 
         $query .= $user ? " ORDER BY t.create DESC" : " ORDER BY r.popularity DESC";
@@ -209,17 +357,86 @@ class TasksTable extends BaseTable
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $tasks ? array_map([Task::class, 'fromData'], $tasks) : [];
-
     }
 
+    public function getTotalPages(
+        int $limit,
+        ?string $category = null,
+        ?int $difficulty = null,
+        bool $user = false,
+        bool $admin = false,
+        ?string $search = null,
+        ?bool $completed = null,
+        ?bool $in_progress = null,  // Новый параметр для фильтрации по заданиям "в работе"
+        ?string $user_uuid = null
+    ): int
+    {
+        $query = $this->buildQuery($user, $admin, $user_uuid);
+        $query = preg_replace('/SELECT .*? FROM/', 'SELECT COUNT(*) FROM', $query);
+
+        $params = [];
+        $whereExists = strpos($query, 'WHERE') !== false;
+
+        $additionalConditions = [];
+        if ($category) {
+            $additionalConditions[] = "t.category = :category";
+            $params[':category'] = $category;
+        }
+        if ($difficulty) {
+            $additionalConditions[] = "t.difficulty = :difficulty";
+            $params[':difficulty'] = $difficulty;
+        }
+        if ($search) {
+            $additionalConditions[] = "(t.name ILIKE :search OR t.description ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+        if ($completed !== null && $user_uuid !== null) {
+            $additionalConditions[] = "EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :completed_user_uuid 
+            AND r.state = 1
+        )";
+            $params[':completed_user_uuid'] = $user_uuid;
+        }
+        if ($in_progress !== null && $user_uuid !== null) {
+            $additionalConditions[] = "EXISTS (
+            SELECT 1 FROM results r 
+            WHERE r.task = t.uuid 
+            AND r.user = :in_progress_user_uuid 
+            AND r.state = 2
+        )";
+            $params[':in_progress_user_uuid'] = $user_uuid;
+        }
+
+        if (!empty($additionalConditions)) {
+            $query .= $whereExists ? " AND " : " WHERE ";
+            $query .= implode(" AND ", $additionalConditions);
+        }
+
+        try {
+            $stmt = $this->connect->prepare($query);
+            foreach ($params as $key => $value) {
+                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $stmt->bindValue($key, $value, $paramType);
+            }
+            $stmt->execute();
+            $totalCount = (int)$stmt->fetchColumn();
+            return (int)ceil($totalCount / $limit);
+        } catch (PDOException $e) {
+            error_log("SQL Error: " . $e->getMessage());
+            error_log("Query: " . $query);
+            return 0;
+        }
+    }
     private function buildQuery(bool $user, bool $admin, ?string $user_uuid = null): string
     {
         $baseQuery = "SELECT t.*";
 
         if ($user_uuid !== null) {
             $baseQuery .= ", 
-                CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
-                CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
+            CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
+            CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
         }
 
         $joins = [];
@@ -267,51 +484,6 @@ class TasksTable extends BaseTable
         }
 
         return $query;
-    }
-
-    public function getTotalPages(
-        int $limit,
-        ?string $category = null,
-        ?int $difficulty = null,
-        bool $user = false,
-        bool $admin = false
-    ): int
-    {
-        $query = $this->buildQuery($user, $admin);
-        $query = preg_replace('/SELECT .*? FROM/', 'SELECT COUNT(*) FROM', $query);
-
-        $params = [];
-        $whereExists = strpos($query, 'WHERE') !== false;
-
-        $additionalConditions = [];
-        if ($category) {
-            $additionalConditions[] = "t.category = :category";
-            $params[':category'] = $category;
-        }
-        if ($difficulty) {
-            $additionalConditions[] = "t.difficulty = :difficulty";
-            $params[':difficulty'] = $difficulty;
-        }
-
-        if (!empty($additionalConditions)) {
-            $query .= $whereExists ? " AND " : " WHERE ";
-            $query .= implode(" AND ", $additionalConditions);
-        }
-
-        try {
-            $stmt = $this->connect->prepare($query);
-            foreach ($params as $key => $value) {
-                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $stmt->bindValue($key, $value, $paramType);
-            }
-            $stmt->execute();
-            $totalCount = (int)$stmt->fetchColumn();
-            return (int)ceil($totalCount / $limit);
-        } catch (PDOException $e) {
-            error_log("SQL Error: " . $e->getMessage());
-            error_log("Query: " . $query);
-            return 0;
-        }
     }
 }
 

@@ -10,3 +10,5 @@
 # IntellijIdea files
 .idea
 /.idea/
+!/qodana.yaml
+!/src/configs/database.ini
