@@ -9,7 +9,7 @@
         Page::standardPage("pages/account/signup.php", ["/signup"]),
         Page::standardPage("pages/errors/404.php", []),
         Page::standardPage("pages/errors/403.php", ["/errors/403"]),
-        Page::standardPage("pages/admin/index.php", ["/admin"]),
+        Page::standardPageRegexp("pages/admin/index.php", ["/\/admin/"]),
         Page::standardPageRegexp("pages/account/account.php", ["/\/account/"]),
         Page::standardPage("pages/account/radar_chart.php", ["/account/radar"]),
         Page::standardPage("pages/tasks/category/index.php", ["/category"]),
