@@ -1,3 +1,18 @@
+<?php
+include_once 'utils/account_utils.php';
+include_once "utils/db_utils.php";
+include_once "utils/utils.php";
+include_once "entities/models/result.php";
+
+$url = $_SERVER['REQUEST_URI'];
+
+if(!AccountUtils::is_signed_in() or !AccountUtils::is_admin()){
+    include_once "pages/errors/403.php";
+    die();
+}
+?>
+
+
 <!doctype html>
 <html lang="ru">
 <head>
