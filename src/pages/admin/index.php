@@ -8,7 +8,14 @@ $url = $_SERVER['REQUEST_URI'];
 
 if(!AccountUtils::is_signed_in() or !AccountUtils::is_admin()){
     include_once "pages/errors/403.php";
-    die();
+    function generate_tab(){
+
+    }
+}else{
+    function generate_tab($url){
+        include_once 'pages/admin/include/tabs.inc.php';
+    }
+
 }
 ?>
 
@@ -23,11 +30,15 @@ if(!AccountUtils::is_signed_in() or !AccountUtils::is_admin()){
     <link rel="stylesheet" href="/global/css/global.css">
     <link rel="stylesheet" href="/global/css/pages.css">
     <script src="/global/js/functions.js"></script>
-    <title>Admin</title>
+    <link rel="stylesheet" href="/pages/account/css/account.css">
 </head>
 <body>
     <div class="main">
-        <h1>Admin</h1>
+        <div class="tabs">
+            <?php
+                generate_tab($url);
+            ?>
+        </div>
     </div>
 </body>
 </html>
