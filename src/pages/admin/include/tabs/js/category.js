@@ -73,7 +73,7 @@ function loadCategories(){
             renderCategories(data.data.categories);
         },
         error: function (error){
-            printError(error)
+            printError(error.responseJSON.error)
         }
     });
 }
@@ -124,6 +124,8 @@ function renderCategories(categories){
 
 function printError(error){
     console.error("Error!", error);
+    let message = new Message();
+    message.showError("Error", error);
 }
 
 function startEdit(element){

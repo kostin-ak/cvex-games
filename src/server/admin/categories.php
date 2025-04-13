@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 include_once "../../configs/config.php";
 require_once '../../utils/db_utils.php';
+include_once '../../utils/account_utils.php';
 
 $db = DBUtils::getInstance();
 $method = $_SERVER['REQUEST_METHOD'];
@@ -13,6 +14,10 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 try {
     $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!AccountUtils::is_admin()){
+        throw new Exception("The user must be an administrator");
+    }
 
     switch ($method) {
         case 'GET':

@@ -13,10 +13,12 @@
     --color--accent--hover: hsl(229, 90%, 50%);
 
     --color--error--basic: rgb(144,0,0);
+    --color--warning--basic: rgb(144, 72, 0);
     --border--color--error--basic--alpha: 241,168,153;
     --background--error--basic--alpha: 255,110,110;
     --background--normal--basic--alpha: 170, 187, 212;
     --background--good--basic--alpha: 150,230,200;
+    --background--warning--basic--alpha: 200,125,85;
 
     /* Цвета текста */
     --text-color--primary: #333;
@@ -101,6 +103,7 @@ body.dark-theme {
 
     --color--error--basic: rgb(241,168,153);
     --color--good--basic: rgb(125,250,150);
+    --color--warning--basic: rgb(255, 168, 120);
 
     --background--good--basic--alpha: 100,175,100;
 

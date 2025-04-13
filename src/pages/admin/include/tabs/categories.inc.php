@@ -12,7 +12,6 @@
 </head>
 <body>
 
-
 <div class="admin-container">
     <div class="admin-header">
         <h1>Управление категориями</h1>
