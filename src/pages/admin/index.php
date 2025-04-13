@@ -30,9 +30,23 @@ if(!AccountUtils::is_signed_in() or !AccountUtils::is_admin()){
     <link rel="stylesheet" href="/global/css/global.css">
     <link rel="stylesheet" href="/global/css/pages.css">
     <script src="/global/js/functions.js"></script>
+    <link rel="stylesheet" href="/pages/admin/css/admin.css">
+    <link rel="stylesheet" href="/pages/admin/css/message.css">
     <link rel="stylesheet" href="/pages/account/css/account.css">
+    <script src="/pages/admin/js/message.js"></script>
+
 </head>
 <body>
+    <div class="modal"></div>
+
+    <div id="infoMessage" class="info-message">
+        <div class="topic">
+            <h2>Type</h2>
+            <button class="close_message">x</button>
+        </div>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquid atque, aut cumque facilis impedit nemo, nisi quam quod rerum similique ullam? Dolorum error eveniet sapiente vel! Facilis, possimus, totam!</p>
+    </div>
+
     <div class="main">
         <div class="tabs">
             <?php

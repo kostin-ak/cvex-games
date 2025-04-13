@@ -1,0 +1,52 @@
+.info-message{
+    /*display: none;*/
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: max(25%, 300px);
+    min-height: 50px;
+    background-color: rgba(var(--background-color--secondary--alpha), 0.8);
+    z-index: 10000000;
+    border-radius: calc(var(--border-radius-button)*3);
+    backdrop-filter: blur(10px);
+    padding: 5px 10px;
+}
+
+.info-message h2{
+    margin: 0;
+}
+
+.info-message .topic{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-message .topic .close_message{
+    background-color: transparent;
+    border: none;
+    font-size: 1.5em;
+    color: var(--text-color--primary);
+    cursor: pointer;
+}
+
+.info-message.error{
+    background-color: rgba(var(--background--error--basic--alpha), 0.5);
+}
+.info-message.error h2{
+    color: var(--color--error--basic);
+}
+
+.info-message.success{
+    background-color: rgba(var(--background--good--basic--alpha), 0.5);
+}
+.info-message.success h2{
+    color: var(--color--good--basic);
+}
+
+.info-message.warning{
+    background-color: rgba(var(--background--warning--basic--alpha), 0.5);
+}
+.info-message.warning h2{
+    color: var(--color--warning--basic);
+}

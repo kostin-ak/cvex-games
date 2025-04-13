@@ -41,7 +41,7 @@ class CategoriesTable extends BaseTable
     public function getList(): array
     {
         $query = "SELECT * FROM categories ORDER BY in_dev ASC, name ASC";
-        return $this->executeQuery($query)->fetchAll();
+        return $this->executeQuery($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getByUUID(string $uuid): ?array
@@ -54,7 +54,111 @@ class CategoriesTable extends BaseTable
     public function getPublicCategories(): array
     {
         $query = "SELECT * FROM categories WHERE is_public = true";
-        return $this->executeQuery($query)->fetchAll();
+        return $this->executeQuery($query)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Добавляет новую категорию
+     */
+    public function addCategory(array $categoryData): bool
+    {
+        if (empty($categoryData['name'])) {
+            throw new InvalidArgumentException("Category name is required");
+        }
+
+        $fields = ['name', 'description', 'is_public', 'in_dev', 'image'];
+        $filteredData = array_intersect_key($categoryData, array_flip($fields));
+
+        $columns = implode(', ', array_keys($filteredData));
+        $placeholders = ':' . implode(', :', array_keys($filteredData));
+
+        $query = "INSERT INTO categories ({$columns}) VALUES ({$placeholders})";
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            foreach ($filteredData as $key => $value) {
+                $paramType = is_bool($value) ? PDO::PARAM_BOOL : (is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+                $stmt->bindValue(':' . $key, $value, $paramType);
+            }
+
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error adding category: " . $e->getMessage());
+            throw new RuntimeException("Failed to add category");
+        }
+    }
+
+    /**
+     * Обновляет существующую категорию по UUID
+     */
+    public function updateCategory(string $uuid, array $categoryData): bool
+    {
+        if (empty($uuid)) {
+            throw new InvalidArgumentException("Category UUID is required");
+        }
+
+        // Проверяем существование категории
+        $existing = $this->getByUUID($uuid);
+        if (!$existing) {
+            throw new RuntimeException("Category not found");
+        }
+
+        $allowedFields = ['name', 'description', 'is_public', 'in_dev', 'image'];
+        $filteredData = array_intersect_key($categoryData, array_flip($allowedFields));
+
+        if (empty($filteredData)) {
+            return false; // Нет данных для обновления
+        }
+
+        $setParts = [];
+        foreach ($filteredData as $key => $value) {
+            $setParts[] = "{$key} = :{$key}";
+        }
+
+        $query = "UPDATE categories SET " . implode(', ', $setParts) . " WHERE uuid = :uuid";
+        $filteredData['uuid'] = $uuid;
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            foreach ($filteredData as $key => $value) {
+                $paramType = is_bool($value) ? PDO::PARAM_BOOL : (is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+                $stmt->bindValue(':' . $key, $value, $paramType);
+            }
+
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error updating category: " . $e->getMessage());
+            throw new RuntimeException("Failed to update category");
+        }
+    }
+
+    /**
+     * Удаляет категорию по UUID
+     */
+    public function deleteCategory(string $uuid): bool
+    {
+        if (empty($uuid)) {
+            throw new InvalidArgumentException("Category UUID is required");
+        }
+
+        // Проверяем, что категория не используется в задачах
+        $queryCheck = "SELECT COUNT(*) FROM tasks WHERE category = :uuid";
+        $count = $this->executeQuery($queryCheck, [':uuid' => $uuid])->fetchColumn();
+
+        if ($count > 0) {
+            throw new RuntimeException("Cannot delete category - it's being used by tasks");
+        }
+
+        $query = "DELETE FROM categories WHERE uuid = :uuid";
+
+        try {
+            return $this->executeQuery($query, [':uuid' => $uuid])->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Error deleting category: " . $e->getMessage());
+            throw new RuntimeException("Failed to delete category");
+        }
     }
 }
 
