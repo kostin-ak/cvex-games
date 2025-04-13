@@ -20,7 +20,6 @@ function category_item(Categoty $category){
     $value = "
         <a class='card".($category->isInDev()?" in-dev":" ")."' href=\"?uuid=".$uuid."\">
             <div class=\"category\">
-                    
                 <div class=\"category-text\">
                     <h1>".$name."</h1>
                     <p>".$description."</p>

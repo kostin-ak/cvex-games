@@ -30,9 +30,12 @@ if(!AccountUtils::is_signed_in() or !AccountUtils::is_admin()){
     <link rel="stylesheet" href="/global/css/global.css">
     <link rel="stylesheet" href="/global/css/pages.css">
     <script src="/global/js/functions.js"></script>
+    <link rel="stylesheet" href="/page/admin/css/admin.css">
     <link rel="stylesheet" href="/pages/account/css/account.css">
+
 </head>
 <body>
+    <div class="modal"></div>
     <div class="main">
         <div class="tabs">
             <?php
