@@ -12,6 +12,13 @@ class Message{
         Message.open();
         setTimeout(Message.close, time);
     }
+    showSuccess(title, text, time=5000){
+        this.setTitle(title);
+        this.setDescription(text);
+        this.setClass("success")
+        Message.open();
+        setTimeout(Message.close, time);
+    }
     static close(){
         $(".info-message").fadeOut();
     }

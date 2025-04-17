@@ -73,7 +73,11 @@ function loadCategories(){
             renderCategories(data.data.categories);
         },
         error: function (error){
-            printError(error.responseJSON.error)
+            try {
+                printError(error.responseJSON.error);
+            }catch (e){
+                printError("Ошибка подключения к серверу!");
+            }
         }
     });
 }
@@ -181,7 +185,11 @@ function changeCategory(data){
                 loadCategories();
             },
             error: function (error) {
-                printError(error.responseJSON.error)
+                try {
+                    printError(error.responseJSON.error);
+                }catch (e){
+                    printError("Ошибка подключения к серверу!");
+                }
             }
         });
     }else{
@@ -200,7 +208,11 @@ function deleteCategoty(uuid){
                 loadCategories();
             },
             error: function (error) {
-                printError(error.responseJSON.error)
+                try {
+                    printError(error.responseJSON.error);
+                }catch (e){
+                    printError("Ошибка подключения к серверу!");
+                }
             }
         });
     }else{
