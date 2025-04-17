@@ -4,8 +4,9 @@ function return_current_tab($url){
     switch($url){
         case "/admin":
         case "/admin/":
-        case "/admin/home":
-            return "home";
+        case "/admin/users":
+        case "/admin/users/":
+            return "users";
             break;
         case "/admin/task":
         case "/admin/task/":
@@ -20,7 +21,7 @@ function return_current_tab($url){
             return "none";
             break;
         default:
-            return "home";
+            return "users";
     }
 }
 
@@ -30,8 +31,8 @@ function is_active($url, $tab){
 
 function get_tab($url){
     switch(return_current_tab($url)){
-        case "home":
-            include_once "pages/admin/include/tabs/home.inc.php";
+        case "users":
+            include_once "pages/admin/include/tabs/users.inc.php";
             break;
         case "categories":
             include_once "pages/admin/include/tabs/categories.inc.php";
@@ -46,7 +47,7 @@ function get_tab($url){
 
 
 <div class="tab_menu">
-    <a href="/admin" class="tab <?php is_active($url, "home")?>"><span class="material-icons">dashboard</span><span class="tab-desc">Основная</span></a>
+    <a href="/admin/users" class="tab <?php is_active($url, "users")?>"><span class="material-icons">groups</span><span class="tab-desc">Пользователи</span></a>
     <a href="/admin/categories" class="tab <?php is_active($url, "categories")?>"><span class="material-icons">category</span><span class="tab-desc">Категории</span></a>
     <a href="/admin/task" class="tab <?php is_active($url, "task")?>"><span class="material-icons">assignment</span><span class="tab-desc">Задания</span></a>
 </div>

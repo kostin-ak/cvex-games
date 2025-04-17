@@ -354,6 +354,137 @@ class UsersTable extends BaseTable
         }
     }
 
+    /**
+     * Поиск пользователей по имени, фамилии, почте или нику
+     *
+     * @param string|null $search Строка для поиска (может быть null)
+     * @param int $limit Ограничение количества результатов (по умолчанию 50)
+     * @return User[] Массив объектов User
+     */
+    public function searchUsers(?string $search = null, int $limit = 10): array
+    {
+        $query = "SELECT * FROM users";
+        $params = [];
+
+        // Добавляем условие поиска, если задана поисковая строка
+        if ($search !== null && $search !== '') {
+            $query .= " WHERE (username ILIKE :search OR 
+                             name ILIKE :search OR 
+                             sname ILIKE :search OR 
+                             mail ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        // Сортировка: сначала админы (role > 0), затем по username
+        $query .= " ORDER BY role > 0 DESC, username ASC";
+
+        // Ограничение количества результатов
+        $query .= " LIMIT :limit";
+        $params[':limit'] = $limit;
+
+        $stmt = $this->connect->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue($key, $value, $paramType);
+        }
+
+        $stmt->execute();
+        $usersData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $usersData;
+    }
+
+    public function getUserByUuid(string $uuid): ?array
+    {
+        $query = "SELECT * FROM users WHERE uuid = :uuid";
+        $stmt = $this->connect->prepare($query);
+        $stmt->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user ?: null;
+    }
+
+    /**
+     * Обновляет данные пользователя по UUID
+     *
+     * @param string $uuid UUID пользователя
+     * @param array $userData Ассоциативный массив с данными для обновления
+     * @return bool Возвращает true при успешном обновлении
+     * @throws InvalidArgumentException|RuntimeException
+     */
+    public function updateUser(string $uuid, array $userData): bool
+    {
+        if (empty($uuid)) {
+            throw new InvalidArgumentException("User UUID is required");
+        }
+
+        // Проверяем существование пользователя
+        $existingUser = $this->getUserByUuid($uuid);
+        if (!$existingUser) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Проверяем уникальность нового username, если он указан
+        if (isset($userData['username']) && $userData['username'] !== $existingUser['username']) {
+            if ($this->usernameExists($userData['username'])) {
+                throw new RuntimeException("Username already exists");
+            }
+        }
+
+        // Проверяем уникальность нового email, если он указан
+        if (isset($userData['mail']) && $userData['mail'] !== $existingUser['mail']) {
+            if ($this->emailExists($userData['mail'])) {
+                throw new RuntimeException("Email already exists");
+            }
+        }
+
+        // Разрешенные поля для обновления
+        $allowedFields = [
+            'username', 'mail', 'name', 'sname',
+            'password', 'role', 'score', 'group'
+        ];
+        $filteredData = array_intersect_key($userData, array_flip($allowedFields));
+
+        if (empty($filteredData)) {
+            return false; // Нет данных для обновления
+        }
+
+        // Формируем части SET запроса, экранируя зарезервированные слова
+        $setParts = [];
+        foreach ($filteredData as $key => $value) {
+            $column = $key === 'group' ? '"group"' : $key;
+            $setParts[] = "{$column} = :{$key}";
+        }
+
+        $query = "UPDATE users SET " . implode(', ', $setParts) . " WHERE uuid = :uuid";
+        $filteredData['uuid'] = $uuid;
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            // Привязываем параметры с правильными типами
+            foreach ($filteredData as $key => $value) {
+                if (is_bool($value)) {
+                    $paramType = PDO::PARAM_BOOL;
+                } elseif (is_int($value)) {
+                    $paramType = PDO::PARAM_INT;
+                } elseif (is_null($value)) {
+                    $paramType = PDO::PARAM_NULL;
+                } else {
+                    $paramType = PDO::PARAM_STR;
+                }
+                $stmt->bindValue(':' . $key, $value, $paramType);
+            }
+
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error updating user: " . $e->getMessage());
+            throw new RuntimeException("Failed to update user: " . $e->getMessage());
+        }
+    }
+
 }
 
 /**

@@ -116,7 +116,10 @@
 @media (max-width: 768px) {
     .home-account-block {
         flex-direction: column;
+        padding: 1px;
+        width: 100%;
     }
+
 
     .radar-chart-container {
         max-width: 100%;
