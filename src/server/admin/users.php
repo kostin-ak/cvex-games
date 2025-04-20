@@ -36,6 +36,7 @@ try {
                     ]
                 ]);
             }
+            break;
         case 'POST':
             if (isset($_POST['uuid'])){
                 try {

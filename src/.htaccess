@@ -1,29 +1,78 @@
+# Включаем перенаправление
+RewriteEngine On
+
+# UTF-8 кодировка для HTML
 AddCharset UTF-8 .html
-<FilesMatch "\.(html)$">
-   Header set Cache-Control: "no-cache, no-store"
-   Header unset ETag
-</FilesMatch>
-Header set X-Content-Type-Options nosniff
-# DISABLE CACHING
+
+# Настройка кэширования по типам файлов
+
+
+#<IfModule mod_headers.c>
+#    Header set Cache-Control "no-cache, no-store, must-revalidate"
+#    Header set Pragma "no-cache"
+#    Header set Expires 0
+#</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # HTML документы - короткий срок кэширования (2 часа)
+    <FilesMatch "\.(html|php)$">
+        ExpiresDefault "access plus 2 hours"
+        Header set Cache-Control "public, max-age=7200"
+    </FilesMatch>
+
+    # CSS, JavaScript, шрифты - длительное кэширование (1 неделя)
+    <FilesMatch "\.(css|js|woff|woff2|ttf|otf|eot)$">
+        ExpiresDefault "access plus 1 week"
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    # Изображения и медиа - длительное кэширование (2 недели)
+    <FilesMatch "\.(jpg|jpeg|png|gif|ico|svg|webp|mp4|webm|ogg)$">
+        ExpiresDefault "access plus 2 weeks"
+        Header set Cache-Control "public, max-age=1209600"
+    </FilesMatch>
+</IfModule>
+
+# Удаление ETag для лучшего кэширования
 <IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
+
+# Безопасность и защита от XSS
+Header set X-Content-Type-Options nosniff
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Frame-Options "SAMEORIGIN"
+
+# Не кэшировать определенные файлы (например, для админки)
+<FilesMatch "admin\.(html|php)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires 0
-</IfModule>
-
-# Включаем перенаправление
-RewriteEngine On
-# Не применять к существующим файлам файлам
-RewriteCond %{REQUEST_FILENAME} !-f
-# Не применять к существующим директориям
-# Редирект всех запросов на index.php
-# L означает Last, нужен чтобы на этом этапе mod_rewrite сразу остановил работу.
-# Короче, небольшое увеличение производительности.
-RewriteRule .* index.php [L]
-
-<FilesMatch ".(htaccess|htpasswd|ini|phps|fla|psd|log|sh)$">
-order allow,deny
-deny from all
 </FilesMatch>
 
+# Защита важных файлов
+<FilesMatch ".(htaccess|htpasswd|ini|phps|fla|psd|log|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Редирект всех запросов на index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]
+
+# Настройка страниц ошибок
 ErrorDocument 403 /pages/errors/403.php
+ErrorDocument 404 /pages/errors/404.php
+ErrorDocument 500 /pages/errors/500.php
+
+# Включение сжатия GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
