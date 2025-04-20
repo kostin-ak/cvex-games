@@ -12,6 +12,8 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type");
 
+session_start();
+
 function getTaskFilesBlock(Task $task){
     $text = "";
     if ($task->getAttachment() != ""){
@@ -50,7 +52,8 @@ function renderTask($task){
     if ($task != null) {
         $text = '<p>'.$task->getTaskText().'</p>' . getTaskFilesBlock($task);
         return $text;
-    }return false;
+    }
+    return false;
 }
 
 function getState($uuid){
@@ -81,10 +84,6 @@ function checkAnswer($uuid, $answer){
 
 try {
     $input = json_decode(file_get_contents('php://input'), true);
-
-    if (!AccountUtils::is_admin()) {
-        throw new Exception("The user must be an administrator");
-    }
 
     switch ($method) {
         case 'GET':

@@ -7,11 +7,11 @@ AddCharset UTF-8 .html
 # Настройка кэширования по типам файлов
 
 
-#<IfModule mod_headers.c>
-#    Header set Cache-Control "no-cache, no-store, must-revalidate"
-#    Header set Pragma "no-cache"
-#    Header set Expires 0
-#</IfModule>
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</IfModule>
 
 <IfModule mod_expires.c>
     ExpiresActive On
