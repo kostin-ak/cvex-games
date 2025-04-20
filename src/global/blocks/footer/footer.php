@@ -4,7 +4,7 @@
 </head>
 
 <body>
-<footer class="card">
+<footer class="card" style="border-radius: 0;">
     <div class="footer-container">
         <div class="contact-info">
             <h3>Контакты</h3>
@@ -59,10 +59,10 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>© 2024 TechPortal | cVEX CTF Platform — Все права защищены<br>
+        <p>© 2025 Alex Kostin | cVEX CTF Platform — Все права защищены<br>
             <a href="/privacy">Политика конфиденциальности</a> |
-            <a href="/terms">Условия использования</a> |
-            <a href="/sitemap">Карта сайта</a></p>
+            <a href="/terms">Условия использования</a>
+            <!--|<a href="/sitemap">Карта сайта</a></p>-->
     </div>
 </footer>
 </body>

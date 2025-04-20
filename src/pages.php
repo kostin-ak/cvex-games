@@ -18,6 +18,11 @@
         Page::standardPageRegexp("pages/tasks/tasks/index.php", ["/\/tasks\?/"]),
         Page::standardPageRegexp("pages/tasks/tasks/task.php", ["/\/task/"]),
         Page::standardPageRegexp("pages/rating/index.php", ["/\/rating/"]),
+        Page::standardPage("pages/info/about.php", ["/about"]),
+        Page::standardPage("pages/info/ctf.php", ["/ctf"]),
+        Page::standardPage("pages/info/contacts.php", ["/contacts"]),
+        Page::standardPage("pages/info/privacy.php", ["/privacy"]),
+        Page::standardPage("pages/info/terms.php", ["/terms"]),
     );
 
     function get_pages(): array
