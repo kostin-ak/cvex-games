@@ -8,7 +8,7 @@ if(!AccountUtils::is_signed_in()){
     header("Location: /login?link=$_SERVER[REQUEST_URI]", true, 307);
     die();
 }else{
-    $task = DBUtils::getInstance()->tasks()->getByUUID($_GET["uuid"]);
+    $task = DBUtils::getInstance()->tasks()->getByUUID($_GET["uuid"], $_SESSION['user_uuid']);
     $passed = DBUtils::getInstance()->tasks()->getPassedCount($_GET["uuid"]);
     $firts_blood = DBUtils::getInstance()->tasks()->getFirstBlood($_GET["uuid"]);
     if (!$firts_blood){
@@ -19,38 +19,15 @@ if(!AccountUtils::is_signed_in()){
     $started = $_GET["started"];
 }
 
-function getTaskFilesBlock(Task $task){
-    $text = "";
-    if ($task->getAttachment() != ""){
-        $attachment = $task->getAttachment();
-        $attachment = explode(";", $attachment);
-
-        $text = '<hr><div><h2>Файлы</h2><div class="files">';
-        foreach ($attachment as $a){
-            $filename = explode("/",$a);
-            $filename = $filename[count($filename)-1];
-            $type = explode(".", $filename);
-            if (count($type) >= 1){
-                $type = $type[count($type) - 1];
-            }else{
-                $type = "zip";
-            }
-
-            $text .= '
-                    <div class="file">
-                        <img src="'.IconChooser::chooseIcon($type).'" alt="">
-                        <div>
-                            <p class="file_name">'.$filename.'</p>
-                            <a href="'.$a.'"
-                               class="download" download>Скачать</a>
-                        </div>
-                    </div>   
-                    ';
-        }
-        $text .= '</div></div>';
-
-    }
-    return $text;
+function getDifficulty(Task $task){
+    $diffs = array(
+        0 => "joke",
+        1 => "easy",
+        2 => "medium",
+        3 => "hard",
+        4 => "impossible"
+    );
+    return $diffs[$task->getDifficulty()];
 }
 
 function getTimeBlock(){
@@ -58,16 +35,6 @@ function getTimeBlock(){
                 <p>Осталось времени: <span>time</span></p>";
 }
 
-function getDifficulty(Task $task){
-    $diffs = array(
-            0 => "joke",
-            1 => "easy",
-            2 => "medium",
-            3 => "hard",
-            4 => "impossible"
-    );
-    return $diffs[$task->getDifficulty()];
-}
 
 function getTime(Task $task){
     if ($task->getTimeLimit() != 0) return "limited";
@@ -88,6 +55,7 @@ function getTime(Task $task){
 </head>
 <body>
     <div class="main">
+        <input type="hidden" id="taskUuid" value="<?php echo $task->getUuid()?>">
         <div class="task_info">
             <div class="first_blood card inner_block">
                 <span class="blood">🩸</span>
@@ -111,7 +79,7 @@ function getTime(Task $task){
                 <span class="completed">📝</span>
                 <div>
                     <?php
-                        echo getTimeBlock($task);
+                        #echo getTimeBlock($task);
                     ?>
                 </div>
             </div>
@@ -135,27 +103,26 @@ function getTime(Task $task){
                 <p><?php echo $task->getDescription()?></p>
             </div>
             <div>
-            <?php
-                if($started){
-                    echo '
-                        <div class="task_description">
-                        <hr>
-                        <p>'.$task->getTaskText().'</p>
-                        '.getTaskFilesBlock($task).'
-                    </div>
-                    ';
-                }else{
-                    echo '<div class="button_holder"><button class="start_button">Начать!</button></div>';
-                }
+                <div class="task_description">
+                    <hr>
+                </div>
+                <?php
+                    if ($task->isCompleted()){
+                        echo '<div class="task-state completed">Выполнено</div>';
+                    }else if ($task->isInProgress()){
+                    }else{
+                        echo '<div class="button_holder active"><button class="start_button">Начать!</button></div>';
+                        #Answer for task 37
+                    }
+                ?>
+                <div class="answer-block">
+                    <input type="text" id="answerTask">
+                    <button class="check-task">Проверить?</button>
+                </div>
 
-            ?>
             </div>
         </div>
     </div>
-    <script>
-        $(".start_button").on("click", function () {
-            window.location.href += "&started=1";
-        });
-    </script>
+    <script src="/pages/tasks/tasks/js/task.js"></script>
 </body>
 </html>

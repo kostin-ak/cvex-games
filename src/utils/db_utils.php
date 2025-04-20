@@ -196,7 +196,7 @@ class UsersTable extends BaseTable
     ): array
     {
         $params = [];
-        $where = $group !== null ? 'WHERE "group" = :group' : '';
+        $where = $group !== null ? 'WHERE "group" = :group' : 'WHERE "role" = 0 ';
 
         if ($group !== null) {
             $params[':group'] = $group;
@@ -492,11 +492,55 @@ class UsersTable extends BaseTable
  */
 class TasksTable extends BaseTable
 {
-    public function getByUUID(string $uuid): ?Task
+    public function getByUUID(string $uuid, ?string $user_uuid = null): ?Task
     {
-        $query = "SELECT * FROM tasks WHERE uuid = :uuid";
-        $result = $this->executeQuery($query, [':uuid' => $uuid])->fetch(PDO::FETCH_ASSOC);
-        return $result ? Task::fromData($result) : null;
+        $query = "SELECT t.*";
+
+        // Добавляем поля для проверки статуса выполнения, если передан user_uuid
+        if ($user_uuid !== null) {
+            $query .= ", 
+            CASE WHEN r_completed.uuid IS NOT NULL THEN true ELSE false END AS completed,
+            CASE WHEN r_in_progress.uuid IS NOT NULL THEN true ELSE false END AS in_progress";
+        }
+
+        $query .= " FROM tasks t";
+
+        // Добавляем JOIN для проверки статуса выполнения, если передан user_uuid
+        if ($user_uuid !== null) {
+            $query .= " 
+            LEFT JOIN results r_completed ON t.uuid = r_completed.task 
+                AND r_completed.user = :user_uuid 
+                AND r_completed.state = 1
+            LEFT JOIN results r_in_progress ON t.uuid = r_in_progress.task 
+                AND r_in_progress.user = :user_uuid 
+                AND r_in_progress.state = 2";
+        }
+
+        $query .= " WHERE t.uuid = :uuid";
+
+        $params = [':uuid' => $uuid];
+        if ($user_uuid !== null) {
+            $params[':user_uuid'] = $user_uuid;
+        }
+
+        $result = $this->executeQuery($query, $params)->fetch(PDO::FETCH_ASSOC);
+
+        //var_dump($result);
+
+        if (!$result) {
+            return null;
+        }
+
+        // Обработка полей completed и in_progress
+        if ($user_uuid !== null) {
+            $result['completed'] = (bool)($result['completed'] ?? false);
+            $result['in_progress'] = (bool)($result['in_progress'] ?? false);
+        } else {
+            // Если user_uuid не передан, удаляем эти поля, чтобы они не попали в конструктор
+            unset($result['completed'], $result['in_progress']);
+        }
+
+        return Task::fromData($result);
     }
 
     public function getPassedCount(string $task_uuid): int
@@ -720,6 +764,34 @@ class TasksTable extends BaseTable
 
         return $query;
     }
+    /**
+     * Проверяет правильность ответа на задание
+     *
+     * @param string $task_uuid UUID задания
+     * @param string $answer Ответ пользователя
+     * @return bool Возвращает true если ответ верный, false если неверный
+     * @throws RuntimeException Если задание не найдено
+     */
+    public function checkAnswer(string $task_uuid, string $answer): bool
+    {
+        // Получаем правильный ответ из базы данных
+        $query = "SELECT answer FROM tasks WHERE uuid = :task_uuid";
+        $stmt = $this->connect->prepare($query);
+        $stmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $task = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$task) {
+            throw new RuntimeException("Task not found");
+        }
+
+        // Сравниваем ответы (регистронезависимо и с удалением лишних пробелов)
+        $correctAnswer = trim(strtolower($task['answer']));
+        $userAnswer = trim(strtolower($answer));
+
+        return $correctAnswer === $userAnswer;
+    }
 }
 
 /**
@@ -730,10 +802,11 @@ class ResultsTable extends BaseTable
     public function getCompletedByUser(string $user_uuid): array
     {
         $query = "SELECT r.*, t.*, c.uuid AS category_uuid, c.in_dev
-                FROM results r
-                JOIN tasks t ON r.task = t.uuid
-                JOIN categories c ON t.category = c.uuid
-                WHERE r.state = 1 AND r.user = :user_uuid AND c.in_dev = false";
+            FROM results r
+            JOIN tasks t ON r.task = t.uuid
+            JOIN categories c ON t.category = c.uuid
+            WHERE r.state = 1 AND r.user = :user_uuid AND c.in_dev = false
+            ORDER BY r.date DESC";  // Добавлена сортировка по дате (новые сначала)
 
         $results = $this->executeQuery($query, [':user_uuid' => $user_uuid])->fetchAll(PDO::FETCH_ASSOC);
 
@@ -859,6 +932,283 @@ class ResultsTable extends BaseTable
         }
 
         return $percentageByCategories;
+    }
+
+
+    /**
+     * Получает результат по UUID задания и UUID пользователя
+     *
+     * @param string $task_uuid UUID задания
+     * @param string $user_uuid UUID пользователя
+     * @return Result|null Экземпляр Result или null если не найден
+     */
+    public function getByTaskAndUser(string $task_uuid, string $user_uuid): ?Result
+    {
+        $query = "SELECT r.*, t.* FROM results r
+                 JOIN tasks t ON r.task = t.uuid
+                 WHERE r.task = :task_uuid AND r.user = :user_uuid";
+
+        $stmt = $this->connect->prepare($query);
+        $stmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+        $stmt->bindValue(':user_uuid', $user_uuid, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            return null;
+        }
+
+        // Преобразуем данные задачи и объединяем с данными результата
+        $taskData = array_intersect_key($data, array_flip([
+            'uuid', 'name', 'description', 'attachment', 'creator', 'create',
+            'value', 'answer', 'end_time', 'hidden', 'branch', 'difficulty',
+            'category', 'task_text', 'user_group', 'time_limit'
+        ]));
+
+
+        $resultData = [
+            'uuid' => $data['uuid'],
+            'user' => $data['user'],
+            'task' => $taskData,
+            'state' => (int)$data['state'],
+            'date' => $data['date']
+        ];
+
+        $result = Result::fromData($resultData);
+
+        return $result;
+    }
+
+    /**
+     * Запускает задание для пользователя, создавая запись в таблице результатов
+     *
+     * @param string $user_uuid UUID пользователя
+     * @param string $task_uuid UUID задания
+     * @return Result Созданная запись результата
+     * @throws RuntimeException Если не удалось создать запись
+     */
+    /**
+     * Запускает задание для пользователя, создавая запись в таблице результатов
+     *
+     * @param string $user_uuid UUID пользователя
+     * @param string $task_uuid UUID задания
+     * @return Result Созданная запись результата
+     * @throws RuntimeException Если не удалось создать запись
+     */
+    public function startTask(string $user_uuid, string $task_uuid): Result
+    {
+        // Проверяем существование пользователя и задания
+        $existingResult = $this->getByTaskAndUser($task_uuid, $user_uuid);
+
+        if ($existingResult) {
+            // Если запись уже существует, просто обновляем состояние на "в работе"
+            return $this->updateTaskState($user_uuid, $task_uuid, 2);
+        }
+
+        $query = 'INSERT INTO results ("user", task, state, date) 
+              VALUES (:user_uuid, :task_uuid, :state, :date)
+              RETURNING *';
+
+        $params = [
+            ':user_uuid' => $user_uuid,
+            ':task_uuid' => $task_uuid,
+            ':state' => 2, // состояние "в работе"
+            ':date' => date('Y-m-d H:i:s')
+        ];
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            foreach ($params as $key => $value) {
+                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $stmt->bindValue($key, $value, $paramType);
+            }
+
+            $stmt->execute();
+            $resultData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$resultData) {
+                throw new RuntimeException("Failed to create task result");
+            }
+
+            // Получаем полные данные задачи
+            $taskData = $this->getTaskData($task_uuid);
+
+            // Формируем данные для создания объекта Result
+            $resultFullData = [
+                'uuid' => $resultData['uuid'],
+                'user' => $user_uuid,
+                'task' => $taskData,
+                'state' => (int)$resultData['state'],
+                'date' => $resultData['date']
+            ];
+
+            return Result::fromData($resultFullData);
+
+        } catch (PDOException $e) {
+            error_log("Error starting task: " . $e->getMessage());
+            throw new RuntimeException("Failed to start task");
+        }
+    }
+
+    /**
+     * Обновляет состояние задания для пользователя
+     */
+    private function updateTaskState(string $user_uuid, string $task_uuid, int $state): Result
+    {
+        $query = 'UPDATE results 
+              SET state = :state, date = :date 
+              WHERE "user" = :user_uuid AND task = :task_uuid
+              RETURNING *';
+
+        $params = [
+            ':user_uuid' => $user_uuid,
+            ':task_uuid' => $task_uuid,
+            ':state' => $state,
+            ':date' => date('Y-m-d H:i:s')
+        ];
+
+        try {
+            $stmt = $this->connect->prepare($query);
+
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+            $resultData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$resultData) {
+                throw new RuntimeException("Failed to update task status");
+            }
+
+            $taskData = $this->getTaskData($task_uuid);
+
+            return Result::fromData([
+                'uuid' => $resultData['uuid'],
+                'user' => $user_uuid,
+                'task' => $taskData,
+                'state' => (int)$resultData['state'],
+                'date' => $resultData['date']
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error updating task state: " . $e->getMessage());
+            throw new RuntimeException("Failed to update task state");
+        }
+    }
+
+    /**
+     * Получает данные задачи по UUID
+     */
+    private function getTaskData(string $task_uuid): array
+    {
+        $query = "SELECT * FROM tasks WHERE uuid = :task_uuid";
+        $stmt = $this->connect->prepare($query);
+        $stmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $taskData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$taskData) {
+            throw new RuntimeException("Task not found");
+        }
+
+        return $taskData;
+    }
+
+    /**
+     * Проверяет ответ на задание и записывает результат
+     *
+     * @param string $user_uuid UUID пользователя
+     * @param string $task_uuid UUID задания
+     * @param string $answer Ответ пользователя
+     * @return bool Возвращает true если ответ верный, false если неверный
+     * @throws RuntimeException Если возникла ошибка при работе с базой данных
+     */
+    public function verifyAndRecordTask(string $user_uuid, string $task_uuid, string $answer): bool
+    {
+        try {
+            // Начинаем транзакцию для атомарности операций
+            $this->connect->beginTransaction();
+
+            // Получаем данные задания
+            $taskQuery = "SELECT answer, value FROM tasks WHERE uuid = :task_uuid FOR UPDATE";
+            $taskStmt = $this->connect->prepare($taskQuery);
+            $taskStmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+            $taskStmt->execute();
+            $task = $taskStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$task) {
+                throw new RuntimeException("Task not found");
+            }
+
+            // Проверяем корректность ответа
+            $correctAnswer = trim(strtolower($task['answer']));
+            $userAnswer = trim(strtolower($answer));
+            $isCorrect = $correctAnswer === $userAnswer;
+
+            // Определяем состояние для записи
+            $state = $isCorrect ? 1 : 3; // 1 - правильно, 3 - неправильно
+
+            // Проверяем существующую запись результата
+            $existingQuery = "SELECT uuid, state FROM results 
+                         WHERE \"user\" = :user_uuid AND task = :task_uuid";
+            $existingStmt = $this->connect->prepare($existingQuery);
+            $existingStmt->bindValue(':user_uuid', $user_uuid, PDO::PARAM_STR);
+            $existingStmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+            $existingStmt->execute();
+            $existingResult = $existingStmt->fetch(PDO::FETCH_ASSOC);
+
+            // Если запись уже существует и задание уже было выполнено - ничего не делаем
+            if ($existingResult && $existingResult['state'] == 1) {
+                $this->connect->rollBack();
+                return true;
+            }
+
+            if ($existingResult) {
+                // Обновляем существующую запись
+                $updateQuery = "UPDATE results SET state = :state, date = :date
+                           WHERE uuid = :uuid";
+                $updateStmt = $this->connect->prepare($updateQuery);
+                $updateStmt->bindValue(':state', $state, PDO::PARAM_INT);
+                $updateStmt->bindValue(':date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+                $updateStmt->bindValue(':uuid', $existingResult['uuid'], PDO::PARAM_STR);
+                $updateStmt->execute();
+            } else {
+                // Создаем новую запись
+                $insertQuery = "INSERT INTO results (\"user\", task, state, date)
+                           VALUES (:user_uuid, :task_uuid, :state, :date)";
+                $insertStmt = $this->connect->prepare($insertQuery);
+                $insertStmt->bindValue(':user_uuid', $user_uuid, PDO::PARAM_STR);
+                $insertStmt->bindValue(':task_uuid', $task_uuid, PDO::PARAM_STR);
+                $insertStmt->bindValue(':state', $state, PDO::PARAM_INT);
+                $insertStmt->bindValue(':date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+                $insertStmt->execute();
+            }
+
+            // Если ответ верный - начисляем очки
+            if ($isCorrect) {
+                $updateScoreQuery = "UPDATE users SET score = score + :value 
+                               WHERE uuid = :user_uuid";
+                $updateScoreStmt = $this->connect->prepare($updateScoreQuery);
+                $updateScoreStmt->bindValue(':value', $task['value'], PDO::PARAM_INT);
+                $updateScoreStmt->bindValue(':user_uuid', $user_uuid, PDO::PARAM_STR);
+                $updateScoreStmt->execute();
+            }
+
+            // Подтверждаем транзакцию
+            $this->connect->commit();
+
+            return $isCorrect;
+
+        } catch (Exception $e) {
+            // В случае ошибки откатываем изменения
+            $this->connect->rollBack();
+            error_log("Error verifying task: " . $e->getMessage());
+            throw new RuntimeException("Failed to verify task: " . $e->getMessage());
+        }
     }
 }
 

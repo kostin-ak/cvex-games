@@ -3,8 +3,6 @@
 <?php
 $activities = DBUtils::getInstance()->results()->getCompletedByUser($_SESSION['user_uuid']);
 $activities = group_by_date($activities, "date");
-ksort($activities);
-$activities = array_reverse($activities);
 ?>
 
 <div class="activity-container">

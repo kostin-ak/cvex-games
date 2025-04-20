@@ -12,7 +12,8 @@ $categories_stats = DBUtils::getInstance()->results()->getCountPassedAndTotalByC
 
     <div class="categories-list">
         <?php foreach ($categories_stats as $key => $category):
-            $percent = round($category['passed']/$category['total']*100);
+            $total = $category['total'] != 0 ? $category['total'] : 1;
+            $percent = round($category['passed']/$total*100);
             $percentage_display = min(max($percent, 0), 100); // Ограничиваем процент от 0 до 100
             ?>
             <div class="category-stats">
