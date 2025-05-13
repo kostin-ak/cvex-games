@@ -9,7 +9,7 @@ Quest Platform — это веб-приложение, которое предо
 1. **Клонирование репозитория:**
 
    ```bash
-   git clone https://github.com/kostin-ak/quest_platform.git
+   git clone https://github.com/kostin-ak/cvex-games.git
 2. Настройка веб-сервера: 
 Убедитесь, что ваш веб-сервер (например, Apache или Nginx) настроен на использование src как корневой директории. Если вы используете Apache, убедитесь, что включен модуль mod_rewrite.
 
